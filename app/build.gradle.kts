@@ -1,6 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlinxSerialization)
+
 }
 
 android {
@@ -40,7 +43,7 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.1"
+        kotlinCompilerExtensionVersion = "1.5.3"
     }
     packaging {
         resources {
@@ -61,6 +64,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.runtime.android)
     implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

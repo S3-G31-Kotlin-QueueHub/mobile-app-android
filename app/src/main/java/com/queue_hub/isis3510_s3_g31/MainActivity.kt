@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.queue_hub.isis3510_s3_g31.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginScreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
 
@@ -21,25 +22,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ISIS3510S3G31Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginScreen(LoginViewModel())
-                }
+                AppNavigation()
             }
         }
     }
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+
 
 @Preview(showBackground = true)
 @Composable
-fun GreetingPreview() {
+fun DefaultPreview() {
     ISIS3510S3G31Theme {
+
     }
 }

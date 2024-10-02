@@ -24,20 +24,22 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.navigation.Main
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel){
+fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
     Box(
         Modifier
             .fillMaxSize()
             .padding(20.dp) ){
-        Login(Modifier.align(Alignment.Center), viewModel)
+        Login(Modifier.align(Alignment.Center), viewModel, navController)
     }
 }
 
 @Composable
-fun Login(modifier: Modifier, viewModel: LoginViewModel) {
+fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavController) {
 
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
@@ -59,14 +61,16 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel) {
         Spacer(modifier = Modifier.padding(4.dp))
         PasswordField(password) { viewModel.onLoginChange(email, it) }
         Spacer(modifier = Modifier.padding(4.dp))
-        LoginButton()
+        LoginButton(navController)
     }
 }
 
 @Composable
-fun LoginButton() {
+fun LoginButton(navController: NavController) {
     Button(
-        onClick = {},
+        onClick = {
+            navController.navigate(Main)
+        },
         modifier = Modifier.fillMaxWidth()
     ){
         Text(
