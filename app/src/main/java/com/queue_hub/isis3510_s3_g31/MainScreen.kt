@@ -30,7 +30,7 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(navController: NavController, placesRepository: PlacesRepository) {
 
     val navItemList = listOf(
         BottomNavItem(
@@ -81,22 +81,20 @@ fun MainScreen(navController: NavController) {
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
             selectedIndex = selectedIndex,
-            navController = navController
+            navController = navController,
+            placesRepository = placesRepository
             )
 
     }
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController){
-    val context = LocalContext.current
-    val placesDb = Room.databaseBuilder(context = context, PlacesDatabase::class.java , name="places_db " ).build()
-    val placesDAO = placesDb.dao
-    val repository = PlacesRepository(placesDAO)
+fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository){
+
     when(selectedIndex){
         0 -> HomeScreen(navController = navController, modifier = Modifier)
         1 -> HomeScreen(navController = navController, modifier = Modifier)
-        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = repository))
+        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository))
         3 -> HomeScreen(navController = navController , modifier = Modifier)
     }
 }
