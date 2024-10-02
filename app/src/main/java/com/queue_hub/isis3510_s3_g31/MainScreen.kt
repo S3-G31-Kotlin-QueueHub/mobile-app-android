@@ -94,9 +94,9 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
     val placesDAO = placesDb.dao
     val repository = PlacesRepository(placesDAO)
     when(selectedIndex){
-        0 -> HomeScreen(navController = navController)
-        1 -> HomeScreen(navController = navController)
+        0 -> HomeScreen(navController = navController, modifier = Modifier)
+        1 -> HomeScreen(navController = navController, modifier = Modifier)
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = repository))
-        3 -> HomeScreen(navController = navController)
+        3 -> HomeScreen(navController = navController , modifier = Modifier)
     }
 }

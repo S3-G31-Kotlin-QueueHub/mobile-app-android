@@ -2,6 +2,7 @@ package com.queue_hub.isis3510_s3_g31.navigation
 
 import LoginViewModel
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -36,7 +37,7 @@ fun AppNavigation() {
             MainScreen(navController = navController)
         }
         composable<Home> {
-            HomeScreen(navController = navController)
+            HomeScreen(navController = navController, modifier = Modifier)
         }
         composable<Recommended>{
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository = repository))
