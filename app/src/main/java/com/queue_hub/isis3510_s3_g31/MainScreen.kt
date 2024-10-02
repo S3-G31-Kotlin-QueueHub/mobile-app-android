@@ -25,6 +25,8 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
+import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
@@ -97,6 +99,7 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
         0 -> HomeScreen(navController = navController, modifier = Modifier)
         1 -> HomeScreen(navController = navController, modifier = Modifier)
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = repository))
-        3 -> HomeScreen(navController = navController , modifier = Modifier)
+        4 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = repository) ,  modifier = Modifier)
+
     }
 }

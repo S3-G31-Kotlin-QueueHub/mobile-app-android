@@ -12,7 +12,7 @@ data class Places(
     val averageWaitingTime: Int,
     val averageWaitingTimeLastHour: Int,
     val averageScoreReview: Float,
-    val bestAverageFrame: String
+    val bestAverageFrame: String,
 )
 
 // 1. Establecimiento son menos tiempo de espera en la ultima hora  /places/shortest-time-lasthour

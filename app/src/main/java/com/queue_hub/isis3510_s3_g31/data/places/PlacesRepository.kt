@@ -19,6 +19,10 @@ class PlacesRepository (
         //TO DO
         return getPlaces()
     }
+    suspend fun getPlace (): Places{
+        //TO DO
+        return getPlaces()[0]
+    }
 
     suspend fun getPlaces(): List<Places> {
         val entities = placesDao.getPlaces()
@@ -41,7 +45,8 @@ class PlacesRepository (
             averageScoreReview = 4.3F,
             averageWaitingTime = 23,
             averageWaitingTimeLastHour = 10,
-            bestAverageFrame = "Tarde"
+            bestAverageFrame = "7pm-6pm",
+
         )
 
         val place2 = Places(
