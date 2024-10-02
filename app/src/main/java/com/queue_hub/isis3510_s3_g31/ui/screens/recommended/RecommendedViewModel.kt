@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.queue_hub.isis3510_s3_g31.data.places.Places
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class RecommendedViewModel ( private val placesRepository: PlacesRepository): ViewModel() {
@@ -16,18 +17,14 @@ class RecommendedViewModel ( private val placesRepository: PlacesRepository): Vi
 
     init {
         viewModelScope.launch {
-            placesRepository.fillDatabase()
+            delay(1000)
             state = state.copy(
-                places = getRecommendedPlaces(),
+                places = placesRepository.getCommonPlacesByUser("69aba19d-d8a3-4033-812f-146fa0cd1c98"),
                 isLoading = false
             )
         }
     }
 
-
-    suspend fun getRecommendedPlaces() : List<Places>{
-            return placesRepository.getRecommendedPlaces()
-    }
 
 
 

@@ -35,7 +35,7 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
 
 @Composable
-fun MainScreen(navController: NavController) {
+fun MainScreen(navController: NavController, placesRepository: PlacesRepository) {
 
     val navItemList = listOf(
         BottomNavItem(
@@ -95,10 +95,11 @@ fun MainScreen(navController: NavController) {
             }
         ) { innerPadding ->
 
-            ContentScreen(
-                modifier = Modifier.padding(innerPadding),
-                selectedIndex = selectedIndex,
-                navController = navController
+        ContentScreen(
+            modifier = Modifier.padding(innerPadding),
+            selectedIndex = selectedIndex,
+            navController = navController,
+            placesRepository = placesRepository
             )
 
         }
@@ -106,15 +107,12 @@ fun MainScreen(navController: NavController) {
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController){
-    val context = LocalContext.current
-    val placesDb = Room.databaseBuilder(context = context, PlacesDatabase::class.java , name="places_db " ).build()
-    val placesDAO = placesDb.dao
-    val repository = PlacesRepository(placesDAO)
+fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository){
+
     when(selectedIndex){
         0 -> HomeScreen(navController = navController, modifier = Modifier)
         1 -> HomeScreen(navController = navController, modifier = Modifier)
-        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = repository))
+        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository))
         3 -> HomeScreen(navController = navController , modifier = Modifier)
     }
 }
