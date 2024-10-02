@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -90,7 +91,11 @@ fun PasswordField(password: String, onTextFieldChange: (String) -> Unit) {
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
         singleLine = true,
         maxLines = 1,
-        colors = TextFieldDefaults.colors()
+
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = colorScheme.onPrimary,
+            focusedContainerColor = colorScheme.onPrimary,
+        )
     )
 }
 
@@ -105,7 +110,10 @@ fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
         singleLine = true,
         maxLines = 1,
-        colors = TextFieldDefaults.colors()
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = colorScheme.onPrimary,
+            focusedContainerColor = colorScheme.onPrimary,
+        )
     )
 }
 
