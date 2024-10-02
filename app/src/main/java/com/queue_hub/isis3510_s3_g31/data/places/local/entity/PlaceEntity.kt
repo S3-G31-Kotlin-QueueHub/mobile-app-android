@@ -5,13 +5,17 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class PlaceEntity(
-    @PrimaryKey(autoGenerate = true )
+    @PrimaryKey()
     val id : String,
     val idFranquicia: String,
     val nombre: String,
     val direccion: String,
     val telefono: String,
-    val latitud: Float,
-    val longitud: Float,
-    val urlImg: String
+    val latitud: Double,
+    val longitud: Double,
+    val urlImg: String,
+    val averageWaitingTime: Int,
+    val averageWaitingTimeLastHour: Int,
+    val averageScoreReview: Float,
+    val bestAverageFrame: String
 )

@@ -18,10 +18,15 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import androidx.room.Room
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -82,10 +87,14 @@ fun MainScreen(navController: NavController) {
 
 @Composable
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController){
+    val context = LocalContext.current
+    val placesDb = Room.databaseBuilder(context = context, PlacesDatabase::class.java , name="places_db " ).build()
+    val placesDAO = placesDb.dao
+    val repository = PlacesRepository(placesDAO)
     when(selectedIndex){
         0 -> HomeScreen(navController = navController)
         1 -> HomeScreen(navController = navController)
-        2 -> RecommendedScreen(navController = navController)
+        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = repository))
         3 -> HomeScreen(navController = navController)
     }
 }
