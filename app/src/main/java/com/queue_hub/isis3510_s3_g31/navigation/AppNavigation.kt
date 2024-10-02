@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.queue_hub.isis3510_s3_g31.MainScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 
 
 @Composable
@@ -28,6 +29,9 @@ fun AppNavigation() {
         }
         composable<Home> {
             HomeScreen(navController = navController)
+        }
+        composable<Recommended>{
+            RecommendedScreen(navController = navController)
         }
 
     }

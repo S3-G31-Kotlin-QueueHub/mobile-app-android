@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -84,7 +85,7 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
     when(selectedIndex){
         0 -> HomeScreen(navController = navController)
         1 -> HomeScreen(navController = navController)
-        2 -> HomeScreen(navController = navController)
+        2 -> RecommendedScreen(navController = navController)
         3 -> HomeScreen(navController = navController)
     }
 }

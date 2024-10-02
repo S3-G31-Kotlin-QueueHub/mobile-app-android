@@ -11,3 +11,6 @@ object Home
 @Serializable
 object Main
 
+@Serializable
+object Recommended
+
