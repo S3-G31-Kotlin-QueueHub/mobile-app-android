@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import com.queue_hub.isis3510_s3_g31.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 
@@ -70,6 +71,7 @@ fun MainScreen(navController: NavController) {
             }
         }
     ) { innerPadding ->
+
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
             selectedIndex = selectedIndex,
@@ -82,9 +84,9 @@ fun MainScreen(navController: NavController) {
 @Composable
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController){
     when(selectedIndex){
-        0 -> HomeScreen(navController = navController)
-        1 -> HomeScreen(navController = navController)
-        2 -> HomeScreen(navController = navController)
-        3 -> HomeScreen(navController = navController)
+        0 -> HomeScreen(navController = navController, modifier = modifier)
+        1 -> HomeScreen(navController = navController, modifier = modifier)
+        2 -> HomeScreen(navController = navController, modifier = modifier)
+        3 -> HomeScreen(navController = navController, modifier = modifier)
     }
 }

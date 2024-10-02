@@ -14,8 +14,6 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginScreen
 fun AppNavigation() {
     val navController = rememberNavController()
 
-
-
     NavHost(
         navController = navController,
         startDestination= Login
@@ -26,10 +24,9 @@ fun AppNavigation() {
         composable<Main> {
             MainScreen(navController = navController)
         }
-        composable<Home> {
-            HomeScreen(navController = navController)
-        }
 
     }
+
+
 
 }
