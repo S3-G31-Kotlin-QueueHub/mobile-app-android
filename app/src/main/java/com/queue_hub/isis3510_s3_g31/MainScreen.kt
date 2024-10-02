@@ -23,6 +23,7 @@ import androidx.navigation.NavController
 import androidx.room.Room
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
+import com.queue_hub.isis3510_s3_g31.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
@@ -76,6 +77,7 @@ fun MainScreen(navController: NavController) {
             }
         }
     ) { innerPadding ->
+
         ContentScreen(
             modifier = Modifier.padding(innerPadding),
             selectedIndex = selectedIndex,
