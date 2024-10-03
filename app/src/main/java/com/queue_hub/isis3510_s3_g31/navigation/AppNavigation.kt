@@ -13,6 +13,8 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 
@@ -36,6 +38,9 @@ fun AppNavigation(placesRepository: PlacesRepository) {
         }
         composable<Recommended>{
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository ))
+        }
+        composable<Detail>{
+            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = repository))
         }
 
     }

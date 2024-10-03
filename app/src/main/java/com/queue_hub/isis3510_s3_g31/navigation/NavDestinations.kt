@@ -14,3 +14,5 @@ object Main
 @Serializable
 object Recommended
 
+@Serializable
+object Detail
