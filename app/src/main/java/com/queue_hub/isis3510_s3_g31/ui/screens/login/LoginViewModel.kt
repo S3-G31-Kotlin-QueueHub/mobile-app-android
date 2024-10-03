@@ -2,9 +2,12 @@ import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.launch
 
 
-class LoginViewModel: ViewModel(){
+class LoginViewModel(val usersRepository: UsersRepository): ViewModel(){
 
     private val _email = MutableLiveData<String>()
     var email : LiveData<String> = _email
@@ -15,6 +18,13 @@ class LoginViewModel: ViewModel(){
     private val _validUser = MutableLiveData<Boolean>()
     val validUser: LiveData<Boolean> = _validUser
 
+    fun auth(){
+        viewModelScope.launch {
+
+            val isValid = usersRepository.authUser("nicoastri@gmail.com","password")
+
+        }
+    }
     fun onLoginChange(email: String, password: String){
         _email.value = email
         _password.value = password
@@ -27,4 +37,6 @@ class LoginViewModel: ViewModel(){
     }
 
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+
 }

@@ -1,9 +1,8 @@
 package com.queue_hub.isis3510_s3_g31.data.places
 
-import android.util.Log
+
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDao
 import com.queue_hub.isis3510_s3_g31.data.places.mapper.toDomain
-import com.queue_hub.isis3510_s3_g31.data.places.mapper.toEntity
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 
 

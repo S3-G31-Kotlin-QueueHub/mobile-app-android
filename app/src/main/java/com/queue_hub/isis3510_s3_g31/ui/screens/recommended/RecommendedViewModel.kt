@@ -17,9 +17,9 @@ class RecommendedViewModel ( private val placesRepository: PlacesRepository): Vi
 
     init {
         viewModelScope.launch {
-            delay(1000)
+            delay(100)
             state = state.copy(
-                places = placesRepository.getCommonPlacesByUser("69aba19d-d8a3-4033-812f-146fa0cd1c98"),
+                places = placesRepository.getRecommendedPlaces(),
                 isLoading = false
             )
         }
