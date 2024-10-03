@@ -9,7 +9,7 @@ import retrofit2.http.Path
 interface PlacesApi {
 
     companion object{
-        val instance = Retrofit.Builder().baseUrl("http://192.168.1.6:8000/").addConverterFactory(MoshiConverterFactory.create()).client(
+        val instance = Retrofit.Builder().baseUrl("http://192.168.0.253:8000/").addConverterFactory(MoshiConverterFactory.create()).client(
             OkHttpClient.Builder().build()
         ).build().create(PlacesApi::class.java)
     }
