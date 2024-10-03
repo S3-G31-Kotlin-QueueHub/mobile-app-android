@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,12 +19,16 @@ fun RecommendedScreen(
 ){
     val state = recommendedViewModel.state
 
-    LazyColumn (modifier = Modifier.fillMaxWidth()) {
-        items(state.places){
-            Column(modifier = Modifier.fillMaxWidth()) {
-                Text( text= it.nombre)
-                Text( text = it.direccion)
-                HorizontalDivider()
+    if (state.isLoading) {
+        CircularProgressIndicator() // Asegúrate de importarlo
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxWidth()) {
+            items(state.places) { place ->
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(text = place.nombre)
+                    Text(text = place.direccion)
+                    HorizontalDivider()
+                }
             }
         }
     }

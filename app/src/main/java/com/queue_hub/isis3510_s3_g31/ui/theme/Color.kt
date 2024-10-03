@@ -10,3 +10,11 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 val DarkGreen = Color(0xFF19381F)
 val LightGreen = Color(0xFF7AA482)
+
+//Custom colors
+val PrimaryColor = Color(0xff19381f)
+val SecondaryColorGreen = Color(0xFF7AA482)
+val SecondaryColorYellow = Color(0xFFE1D887)
+val BackgroundColor = Color(0xFFBDBDBD)
+val NeutralColor = Color(0xFFD9D9D9)
+

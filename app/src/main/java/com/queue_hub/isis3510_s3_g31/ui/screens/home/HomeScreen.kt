@@ -17,8 +17,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -139,8 +141,9 @@ fun ClickableVerticalOption(
             .clickable(onClick = onClick)
             .padding(8.dp)
             .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.onPrimary)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -174,7 +177,9 @@ fun ClickableHorizontalOption(
         modifier = modifier
             .clickable(onClick = onClick)
             .padding(8.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.onPrimary)
 
         ) {
         Row(
@@ -224,7 +229,9 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.onPrimary)
     ) {
         Row(
             modifier = Modifier

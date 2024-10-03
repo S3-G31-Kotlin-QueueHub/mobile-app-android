@@ -20,13 +20,8 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 
 
 @Composable
-fun AppNavigation() {
+fun AppNavigation(placesRepository: PlacesRepository) {
     val navController = rememberNavController()
-
-    val context = LocalContext.current
-    val placesDb = Room.databaseBuilder(context = context, PlacesDatabase::class.java , name="places_db " ).build()
-    val placesDAO = placesDb.dao
-    val repository = PlacesRepository(placesDAO)
 
     NavHost(
         navController = navController,
@@ -36,13 +31,13 @@ fun AppNavigation() {
            LoginScreen(viewModel = LoginViewModel() , navController = navController )
         }
         composable<Main> {
-            MainScreen(navController = navController)
+            MainScreen(navController = navController, placesRepository = placesRepository)
         }
         composable<Home> {
             HomeScreen(navController = navController, modifier = Modifier)
         }
         composable<Recommended>{
-            RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository = repository))
+            RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository ))
         }
         composable<Detail>{
             DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = repository))
