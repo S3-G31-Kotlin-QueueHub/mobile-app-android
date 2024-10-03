@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.room.Room
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
@@ -32,6 +33,7 @@ import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
@@ -76,7 +78,11 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository)
                                 selectedIndex = index
                             },
                             label = {
-                                Text(text = item.label)
+                                Text(
+                                    text = item.label,
+                                    fontSize = 11.sp
+
+                                )
                             },
                             icon = {
                                 Icon(
@@ -112,8 +118,9 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository)
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository){
 
     when(selectedIndex){
-        0 -> HomeScreen(navController = navController, modifier = Modifier)
-        1 -> HomeScreen(navController = navController, modifier = Modifier)
+
+        0 -> HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel(placesRepository = placesRepository ))
+        1 -> HomeScreen(navController = navController,  modifier = Modifier, homeViewModel = HomeViewModel(placesRepository = placesRepository  ))
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository))
         3 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = placesRepository) ,  modifier = Modifier)
     }

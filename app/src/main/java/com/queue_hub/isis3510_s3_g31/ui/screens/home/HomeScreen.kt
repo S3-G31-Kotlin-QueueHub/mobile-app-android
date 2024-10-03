@@ -17,8 +17,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -32,21 +33,24 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.data.places.Places
 
 
 @Composable
-fun HomeScreen(navController: NavController, modifier: Modifier) {
+fun HomeScreen(navController: NavController, modifier: Modifier, homeViewModel: HomeViewModel) {
+    val state = homeViewModel.state
+
     Box(
         Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier)
+        Home(modifier = Modifier, state = state)
     }
 }
 
 @Composable
-fun Home (modifier: Modifier){
+fun Home (modifier: Modifier, state: HomeViewState){
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -66,7 +70,7 @@ fun Home (modifier: Modifier){
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        CommonPlacesList(modifier = Modifier)
+        CommonPlacesList(modifier = Modifier, state = state)
     }
 
 }
@@ -200,30 +204,24 @@ fun ClickableHorizontalOption(
 }
 
 @Composable
-fun CommonPlacesList(modifier: Modifier){
-
-    val commonPlaces = listOf(
-        CommonPlace("Restaurante Sheriff", 40, R.drawable.comercio),
-        CommonPlace("Restaurante Sheriff", 40, R.drawable.comercio),
-        CommonPlace("Restaurante Sheriff", 40, R.drawable.comercio),
-        CommonPlace("Restaurante Sheriff", 40, R.drawable.comercio),
-    )
-
-    LazyColumn(
-        modifier = modifier,
-        contentPadding = PaddingValues(bottom = 60.dp)
-    ) {
-        items(commonPlaces) { place ->
-            CommonPlaceCard(place = place, onClick = { /* Manejar clic */ })
+fun CommonPlacesList(modifier: Modifier, state: HomeViewState){
+    if (state.isLoading) {
+        CircularProgressIndicator() // Asegúrate de importarlo
+    } else {
+        LazyColumn(
+            modifier = modifier,
+            contentPadding = PaddingValues(bottom = 60.dp)) {
+            items(state.places) { place ->
+                CommonPlaceCard(place = place, onClick = { /* Manejar clic */ })
+            }
         }
     }
-
 }
 
-data class CommonPlace(val name: String, val visitsCount: Int, val imageRes: Int)
+
 
 @Composable
-fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
+fun CommonPlaceCard(place: Places, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -242,17 +240,17 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
 
             Column {
                 Text(
-                    text = place.name,
+                    text = place.nombre,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Visited ${place.visitsCount} times",
+                    text = place.direccion,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             Image(
-                painter = painterResource(id = place.imageRes),
+                painter = painterResource(id = R.drawable.comercio),
                 contentDescription = null,
                 modifier = Modifier
                     .size(60.dp)
