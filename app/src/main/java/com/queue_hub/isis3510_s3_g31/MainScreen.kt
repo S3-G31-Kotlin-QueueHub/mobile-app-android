@@ -32,6 +32,7 @@ import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
@@ -112,8 +113,9 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository)
 fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository){
 
     when(selectedIndex){
-        0 -> HomeScreen(navController = navController, modifier = Modifier)
-        1 -> HomeScreen(navController = navController, modifier = Modifier)
+
+        0 -> HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel(placesRepository = placesRepository ))
+        1 -> HomeScreen(navController = navController,  modifier = Modifier, homeViewModel = HomeViewModel(placesRepository = placesRepository  ))
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository))
         3 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = placesRepository) ,  modifier = Modifier)
     }
