@@ -213,11 +213,6 @@ fun CommonPlacesList(modifier: Modifier, state: HomeViewState){
             contentPadding = PaddingValues(bottom = 60.dp)) {
             items(state.places) { place ->
                 CommonPlaceCard(place = place, onClick = { /* Manejar clic */ })
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(text = place.nombre)
-                    Text(text = place.direccion)
-                    HorizontalDivider()
-                }
             }
         }
     }
@@ -249,13 +244,13 @@ fun CommonPlaceCard(place: Places, onClick: () -> Unit) {
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = "Address ${place.direccion}",
+                    text = place.direccion,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
             Image(
-                painter = painterResource(id = R.drawable.img),
+                painter = painterResource(id = R.drawable.comercio),
                 contentDescription = null,
                 modifier = Modifier
                     .size(60.dp)

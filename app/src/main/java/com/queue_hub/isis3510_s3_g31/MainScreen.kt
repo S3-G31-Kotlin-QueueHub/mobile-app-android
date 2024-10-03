@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.room.Room
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
@@ -77,7 +78,11 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository)
                                 selectedIndex = index
                             },
                             label = {
-                                Text(text = item.label)
+                                Text(
+                                    text = item.label,
+                                    fontSize = 11.sp
+
+                                )
                             },
                             icon = {
                                 Icon(
