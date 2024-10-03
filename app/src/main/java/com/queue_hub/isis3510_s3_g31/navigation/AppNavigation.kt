@@ -41,7 +41,7 @@ fun AppNavigation(placesRepository: PlacesRepository, userRepository: UsersRepos
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository ))
         }
         composable<Detail>{
-            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = repository))
+            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = placesRepository))
         }
 
     }

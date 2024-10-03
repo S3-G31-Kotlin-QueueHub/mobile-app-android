@@ -16,7 +16,7 @@ class DetailViewModel (private val placesRepository: PlacesRepository): ViewMode
 
     init {
         viewModelScope.launch {
-            placesRepository.fillDatabase()
+
             state = state.copy(
                 place = getPlace(),
                 isLoading = false
