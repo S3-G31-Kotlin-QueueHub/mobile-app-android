@@ -99,7 +99,7 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
         0 -> HomeScreen(navController = navController, modifier = Modifier)
         1 -> HomeScreen(navController = navController, modifier = Modifier)
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = repository))
-        4 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = repository) ,  modifier = Modifier)
+        3 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = repository) ,  modifier = Modifier)
 
     }
 }

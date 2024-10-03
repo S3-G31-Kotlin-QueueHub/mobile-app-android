@@ -30,7 +30,7 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController,
-        startDestination= Detail
+        startDestination= Login
     ){
         composable<Login> {
            LoginScreen(viewModel = LoginViewModel() , navController = navController )
@@ -45,7 +45,7 @@ fun AppNavigation() {
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository = repository))
         }
         composable<Detail>{
-            DetailScreen(navController = navController, detailViewModel = DetailViewModel( placesRepository = repository), modifier = Modifier)
+            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = repository))
         }
 
     }
