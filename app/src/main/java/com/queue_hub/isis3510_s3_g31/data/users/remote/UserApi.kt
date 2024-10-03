@@ -9,7 +9,7 @@ import retrofit2.http.POST
 interface UserApi {
 
     companion object{
-        val instance2 = Retrofit.Builder().baseUrl("http://192.168.1.6:8000/").addConverterFactory(
+        val instance2 = Retrofit.Builder().baseUrl("http://192.168.0.253:8000/").addConverterFactory(
             MoshiConverterFactory.create()).client(
             OkHttpClient.Builder().build()
         ).build().create(UserApi::class.java)
