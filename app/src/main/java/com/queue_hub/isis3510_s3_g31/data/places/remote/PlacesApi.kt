@@ -19,4 +19,5 @@ interface PlacesApi {
 
     @GET("places/common-by-user/{id}")
     suspend fun getCommonPlacesByUserId(@Path("id") userId: String ): List<PlacesResponseItem>
+    
 }
