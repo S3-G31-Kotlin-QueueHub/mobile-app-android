@@ -3,4 +3,11 @@
     <string name="login">Login</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
+    <string name="home_header">What are you looking for today?</string>
+    <string name="cambio">RESTAURANTE XD</string>
+    <string name="home_restaurants">Restaurants</string>
+    <string name="home_stores">Stores</string>
+    <string name="home_other_places">Other places</string>
+    <string name="home_common_places">Common places</string>
+    <string name="recomendaciones">Recommended places</string>
 </resources>
