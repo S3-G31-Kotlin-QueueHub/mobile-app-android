@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.navigation.Main
@@ -62,14 +63,15 @@ fun Login(modifier: Modifier, viewModel: LoginViewModel, navController: NavContr
         Spacer(modifier = Modifier.padding(4.dp))
         PasswordField(password) { viewModel.onLoginChange(email, it) }
         Spacer(modifier = Modifier.padding(4.dp))
-        LoginButton(navController)
+        LoginButton(navController, viewModel)
     }
 }
 
 @Composable
-fun LoginButton(navController: NavController) {
+fun LoginButton(navController: NavController, viewModel: LoginViewModel) {
     Button(
         onClick = {
+            viewModel.auth()
             navController.navigate(Main)
         },
         modifier = Modifier.fillMaxWidth()

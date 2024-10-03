@@ -11,6 +11,7 @@ import androidx.room.Room
 import com.queue_hub.isis3510_s3_g31.MainScreen
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
@@ -20,7 +21,7 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 
 
 @Composable
-fun AppNavigation(placesRepository: PlacesRepository) {
+fun AppNavigation(placesRepository: PlacesRepository, userRepository: UsersRepository) {
     val navController = rememberNavController()
 
     NavHost(
@@ -28,7 +29,7 @@ fun AppNavigation(placesRepository: PlacesRepository) {
         startDestination= Login
     ){
         composable<Login> {
-           LoginScreen(viewModel = LoginViewModel() , navController = navController )
+           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController )
         }
         composable<Main> {
             MainScreen(navController = navController, placesRepository = placesRepository)
