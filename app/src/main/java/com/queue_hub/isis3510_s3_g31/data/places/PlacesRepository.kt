@@ -36,6 +36,10 @@ class PlacesRepository (
             return getPlaces()
         }
     }
+    suspend fun getPlace (): Places{
+        //TO DO
+        return getPlaces()[0]
+    }
 
     suspend fun getPlaces(): List<Places> {
 
@@ -45,8 +49,5 @@ class PlacesRepository (
         }
         return entitiesDomain
     }
-
-
-
 
 }
