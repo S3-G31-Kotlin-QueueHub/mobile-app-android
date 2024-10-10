@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "186003343068",
+    "project_id": "queue-hub-project",
+    "storage_bucket": "queue-hub-project.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:186003343068:android:125c6b13156ef0f1d4d619",
+        "android_client_info": {
+          "package_name": "com.queue_hub.isis3510_s3_g31"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDZSBXxbfvhadZjn8L4uBhtnymPS9Rs5UE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
