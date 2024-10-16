@@ -86,7 +86,7 @@ fun SignUp(
         HeaderImage()
         Spacer(modifier = Modifier.padding(16.dp))
         Text(
-            text = stringResource(id = R.string.login),
+            text = stringResource(id = R.string.sign_up),
             style = MaterialTheme.typography.headlineLarge,
 
             )
