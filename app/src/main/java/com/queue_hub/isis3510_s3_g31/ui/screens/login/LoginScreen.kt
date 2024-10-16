@@ -9,12 +9,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,13 +42,14 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.firebase.auth.FirebaseAuth
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.navigation.Detail
 import com.queue_hub.isis3510_s3_g31.navigation.Main
 import com.queue_hub.isis3510_s3_g31.navigation.SignUp
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
+fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: FirebaseAuth){
     val loginState by viewModel.loginState.observeAsState(LoginState.Idle)
     LaunchedEffect(loginState) {
         when (loginState) {
@@ -61,7 +64,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController){
             .fillMaxSize()
             .padding(20.dp) ) {
 
-        Login(Modifier.align(Alignment.Center), viewModel, navController, loginState)
+        Login(Modifier.align(Alignment.Center), viewModel, navController, loginState, auth)
 
 
     }
@@ -72,7 +75,8 @@ fun Login(
     modifier: Modifier,
     viewModel: LoginViewModel,
     navController: NavController,
-    loginState: LoginState
+    loginState: LoginState,
+    auth: FirebaseAuth
 ) {
 
     val email: String by viewModel.email.observeAsState(initial = "")
@@ -96,6 +100,7 @@ fun Login(
                 CircularProgressIndicator()
             }
             is LoginState.Error -> {
+                Spacer(modifier = Modifier.height(12.dp))
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.End
@@ -114,7 +119,7 @@ fun Login(
         Spacer(modifier = Modifier.padding(4.dp))
         PasswordField(password) { viewModel.onLoginChange(email, it) }
         Spacer(modifier = Modifier.padding(8.dp))
-        LoginButton(navController, viewModel)
+        LoginButton(navController, viewModel, auth)
         Spacer(modifier = Modifier.padding(16.dp))
         Text(
             text = stringResource(R.string.signUpText),
@@ -126,10 +131,10 @@ fun Login(
 }
 
 @Composable
-fun LoginButton(navController: NavController, viewModel: LoginViewModel) {
+fun LoginButton(navController: NavController, viewModel: LoginViewModel, auth: FirebaseAuth) {
     Button(
         onClick = {
-            viewModel.auth()
+            viewModel.authenticateUsers(auth)
         },
         modifier = Modifier.fillMaxWidth()
     ){
@@ -145,9 +150,11 @@ fun SignUpButton(navController: NavController){
         onClick = {
             navController.navigate(SignUp)
         },
+        colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary)
     ){
         Text(
-            text = stringResource(R.string.sign_up)
+            text = stringResource(R.string.sign_up),
+            color = colorScheme.onSecondary
         )
     }
 }

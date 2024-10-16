@@ -30,7 +30,7 @@ fun AppNavigation(placesRepository: PlacesRepository, userRepository: UsersRepos
         startDestination= Login
     ){
         composable<Login> {
-           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController )
+           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController, auth = auth )
         }
         composable<Main> {
             MainScreen(navController = navController, placesRepository = placesRepository)
