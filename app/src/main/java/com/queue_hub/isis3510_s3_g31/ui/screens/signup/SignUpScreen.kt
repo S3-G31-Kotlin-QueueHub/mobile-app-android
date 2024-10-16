@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -95,6 +98,7 @@ fun SignUp(
                 CircularProgressIndicator()
             }
             is SignUpState.Error -> {
+                Spacer(modifier = Modifier.height(12.dp))
                 Column(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.End
@@ -130,13 +134,16 @@ fun LoginButton(navController: NavController) {
     Button(
         onClick = {
             navController.navigate(Login)
-        }
-    ){
+        },
+        colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary)
+    ) {
         Text(
-            text = stringResource(R.string.sign_in)
+            text = stringResource(R.string.sign_in),
+            color = colorScheme.onSecondary
         )
     }
 }
+
 
 @Composable
 fun SignUpButton(viewModel: SignUpViewModel, auth: FirebaseAuth){

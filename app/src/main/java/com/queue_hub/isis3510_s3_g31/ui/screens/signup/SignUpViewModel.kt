@@ -39,10 +39,12 @@ class SignUpViewModel(auth: FirebaseAuth): ViewModel() {
                             if (task.isSuccessful) {
                                 _signUpState.value = SignUpState.Success
                             } else {
-                                _signUpState.value = SignUpState.Error("You can't sign up")
+                                _signUpState.value = SignUpState.Error("This email has already register, please sign in or try with a different email.")
                                 Log.w(TAG, "createUserWithEmail:failure", task.exception)
                             }
                         }
+                }else{
+                    _signUpState.value = SignUpState.Error("A valid email and a password larger than 6 digits is needed")
                 }
             } catch (e: Exception) {
                 _signUpState.value = SignUpState.Error("Sign Up error: ${e.message}")
