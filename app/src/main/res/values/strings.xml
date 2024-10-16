@@ -10,4 +10,8 @@
     <string name="home_other_places">Other places</string>
     <string name="home_common_places">Common places</string>
     <string name="recomendaciones">Recommended places</string>
+    <string name="signUpText">It\'s your first time here?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="SignInText">Do you already have an account?</string>
+    <string name="sign_in">Sign In</string>
 </resources>

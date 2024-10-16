@@ -29,7 +29,7 @@ class LoginViewModel(private val usersRepository: UsersRepository): ViewModel() 
                 if (isValid) {
                     _loginState.value = LoginState.Success
                 } else {
-                    _loginState.value = LoginState.Error("Credenciales inválidas")
+                    _loginState.value = LoginState.Error("Invalid Credentials")
                 }
             } catch (e: Exception) {
                 _loginState.value = LoginState.Error("Error de autenticación: ${e.message}")

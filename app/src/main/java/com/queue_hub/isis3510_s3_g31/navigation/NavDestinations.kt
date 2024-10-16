@@ -16,3 +16,6 @@ object Recommended
 
 @Serializable
 object Detail
+
+@Serializable
+object SignUp
