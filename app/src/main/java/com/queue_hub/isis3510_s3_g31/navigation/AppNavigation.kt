@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.MainScreen
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
@@ -22,7 +23,12 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpViewModel
 
 
 @Composable
-fun AppNavigation(placesRepository: PlacesRepository, userRepository: UsersRepository, auth: FirebaseAuth) {
+fun AppNavigation(
+    placesRepository: PlacesRepository,
+    userRepository: UsersRepository,
+    auth: FirebaseAuth,
+    db: FirebaseFirestore
+) {
     val navController = rememberNavController()
 
     NavHost(
@@ -46,7 +52,7 @@ fun AppNavigation(placesRepository: PlacesRepository, userRepository: UsersRepos
             DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = placesRepository))
         }
         composable<SignUp> {
-            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth), auth = auth)
+            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth), auth = auth, db = db)
         }
 
     }
