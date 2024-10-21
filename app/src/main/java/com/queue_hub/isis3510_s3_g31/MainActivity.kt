@@ -10,6 +10,8 @@ import androidx.room.Room
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
@@ -21,18 +23,20 @@ import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
 
 class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
+    private lateinit var db: FirebaseFirestore
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)
         auth = Firebase.auth
+        db = Firebase.firestore
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
         val repositoryPlaces= PlacesRepository(placesDAO, api = PlacesApi.instance)
         val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
         setContent {
             ISIS3510S3G31Theme {
-                AppNavigation(placesRepository = repositoryPlaces, userRepository = repositoryUsers, auth = auth)
+                AppNavigation(placesRepository = repositoryPlaces, userRepository = repositoryUsers, auth = auth, db)
             }
         }
     }

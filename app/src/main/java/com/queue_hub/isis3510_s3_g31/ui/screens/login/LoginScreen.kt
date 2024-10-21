@@ -3,6 +3,8 @@ package com.queue_hub.isis3510_s3_g31.ui.screens.login
 import LoginState
 import LoginViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +13,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -62,11 +68,15 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: F
     Box(
         Modifier
             .fillMaxSize()
-            .padding(20.dp) ) {
-
-        Login(Modifier.align(Alignment.Center), viewModel, navController, loginState, auth)
-
-
+            .background(colorScheme.background) // El fondo cubre toda la pantalla
+    ) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+        ) {
+            Login(Modifier.align(Alignment.Center), viewModel, navController, loginState, auth)
+        }
     }
 }
 
@@ -91,9 +101,8 @@ fun Login(
         HeaderImage()
         Spacer(modifier = Modifier.padding(16.dp))
         Text(
-            text = stringResource(id = R.string.login),
-            style = MaterialTheme.typography.headlineLarge,
-            
+            text = stringResource(id = R.string.header_text),
+            style = MaterialTheme.typography.titleMedium,
         )
         when (loginState) {
             is LoginState.Loading -> {
@@ -114,13 +123,37 @@ fun Login(
             }
             else -> {}
         }
-        Spacer(modifier = Modifier.padding(16.dp))
-        EmailField(email) { viewModel.onLoginChange(it, password) }
-        Spacer(modifier = Modifier.padding(4.dp))
-        PasswordField(password) { viewModel.onLoginChange(email, it) }
-        Spacer(modifier = Modifier.padding(8.dp))
-        LoginButton(navController, viewModel, auth)
-        Spacer(modifier = Modifier.padding(16.dp))
+
+
+        Spacer(modifier = Modifier.padding(12.dp))
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(),
+            elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = colorScheme.surface),
+            shape = RectangleShape
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 15.dp, vertical = 24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(id = R.string.login),
+                    style = MaterialTheme.typography.headlineLarge,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                EmailField(email) { viewModel.onLoginChange(it, password) }
+                Spacer(modifier = Modifier.height(8.dp))
+                PasswordField(password) { viewModel.onLoginChange(email, it) }
+                Spacer(modifier = Modifier.height(24.dp))
+                LoginButton(navController, viewModel, auth)
+            }
+        }
+        Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.signUpText),
             style = MaterialTheme.typography.bodyLarge
@@ -163,9 +196,15 @@ fun SignUpButton(navController: NavController){
 @Composable
 fun PasswordField(password: String, onTextFieldChange: (String) -> Unit) {
     var passwordVisible by remember { mutableStateOf(false) }
-
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        shape = RectangleShape
+    ) {
     TextField(
         value = password,
+        shape = RectangleShape,
         onValueChange = {onTextFieldChange(it)},
         modifier = Modifier.fillMaxWidth(),
         placeholder = { Text(text= stringResource(id = R.string.password) )},
@@ -178,34 +217,42 @@ fun PasswordField(password: String, onTextFieldChange: (String) -> Unit) {
         trailingIcon = {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    imageVector = if (passwordVisible) Icons.Default.Done else Icons.Default.Face,
+                    painter = if (passwordVisible) painterResource(id =  R.drawable.baseline_visibility_off_24) else painterResource(id = R.drawable.round_visibility_24),
                     contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
                 )
             }
         },
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = colorScheme.onPrimary,
-            focusedContainerColor = colorScheme.onPrimary,
+            unfocusedContainerColor = colorScheme.background,
+            focusedContainerColor = colorScheme.background,
         )
     )
+    }
 }
 
 @Composable
 fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
-
-    TextField(
-        value = email,
-        onValueChange = { onTextFieldChange(it) },
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text= stringResource(id = R.string.email) )},
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-        singleLine = true,
-        maxLines = 1,
-        colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = colorScheme.onPrimary,
-            focusedContainerColor = colorScheme.onPrimary,
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+        shape = RectangleShape
+    ) {
+        TextField(
+            shape = RectangleShape,
+            value = email,
+            onValueChange = { onTextFieldChange(it) },
+            modifier = Modifier.fillMaxWidth(),
+            placeholder = { Text(text = stringResource(id = R.string.email)) },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+            singleLine = true,
+            maxLines = 1,
+            colors = TextFieldDefaults.colors(
+                unfocusedContainerColor = colorScheme.background,
+                focusedContainerColor = colorScheme.background,
+            )
         )
-    )
+    }
 }
 
 
