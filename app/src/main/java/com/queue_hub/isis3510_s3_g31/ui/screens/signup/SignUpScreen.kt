@@ -11,11 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -48,8 +44,8 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.R
-import com.queue_hub.isis3510_s3_g31.navigation.Login
-import com.queue_hub.isis3510_s3_g31.navigation.Main
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Login
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Main
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel, navController: NavController, auth: FirebaseAuth, db: FirebaseFirestore){
@@ -57,7 +53,12 @@ fun SignUpScreen(viewModel: SignUpViewModel, navController: NavController, auth:
     LaunchedEffect(signUpState) {
         when (signUpState) {
             is SignUpState.Success -> {
-                navController.navigate(Main)
+                navController.navigate(Main){
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
+
             }
             else -> {} // No hacer nada para otros estados
         }
@@ -152,6 +153,7 @@ fun LoginButton(navController: NavController) {
     Button(
         onClick = {
             navController.navigate(Login)
+
         },
         colors = ButtonDefaults.buttonColors(containerColor = colorScheme.secondary)
     ) {

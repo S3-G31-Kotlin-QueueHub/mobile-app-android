@@ -4,10 +4,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val usersRepository: UsersRepository): ViewModel() {
+class LoginViewModel(
+    private val usersRepository: UsersRepository,
+    private val userPreferencesRepository: UserPreferencesRepository
+): ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -42,7 +47,15 @@ class LoginViewModel(private val usersRepository: UsersRepository): ViewModel() 
                     auth.signInWithEmailAndPassword(emailValue, passwordValue)
                         .addOnCompleteListener{ task ->
                             if (task.isSuccessful) {
+                                val user = auth.currentUser
+                                val userId = user?.uid ?: ""
+                                val email = user?.email ?: ""
+                                viewModelScope.launch {
+                                    userPreferencesRepository.saveUserData(email, userId)
+                                }
+
                                 _loginState.value = LoginState.Success
+
                             } else {
                                 _loginState.value = LoginState.Error("Your sign in credentials are incorrect, please check and try again")
                             }

@@ -46,7 +46,7 @@ fun RecommendedScreen(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ){
-            CircularProgressIndicator() // Asegúrate de importarlo
+            CircularProgressIndicator()
         }
 
     } else {

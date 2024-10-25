@@ -10,12 +10,13 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.queue_hub.isis3510_s3_g31.data.model.User
+import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.queue_hub.isis3510_s3_g31.data.users.remote.model.User
 import kotlinx.coroutines.launch
 
-class SignUpViewModel(auth: FirebaseAuth): ViewModel() {
-
-
+class SignUpViewModel(
+    private val auth: FirebaseAuth,
+    private val userPreferencesRepository: UserPreferencesRepository): ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -83,6 +84,14 @@ class SignUpViewModel(auth: FirebaseAuth): ViewModel() {
                                             .document(uid)
                                             .set(user)
                                             .addOnSuccessListener {
+
+                                                viewModelScope.launch {
+                                                    userPreferencesRepository.saveUserData(
+                                                        email.value.orEmpty(),
+                                                        uid
+                                                    )
+                                                }
+
                                                 _signUpState.value = SignUpState.Success
                                             }
                                             .addOnFailureListener { e ->

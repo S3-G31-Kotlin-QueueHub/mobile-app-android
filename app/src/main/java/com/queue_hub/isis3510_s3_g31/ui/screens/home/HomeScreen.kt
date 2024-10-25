@@ -206,7 +206,7 @@ fun ClickableHorizontalOption(
 @Composable
 fun CommonPlacesList(modifier: Modifier, state: HomeViewState){
     if (state.isLoading) {
-        CircularProgressIndicator() // Asegúrate de importarlo
+        CircularProgressIndicator()
     } else {
         LazyColumn(
             modifier = modifier,

@@ -1,4 +1,4 @@
-package com.queue_hub.isis3510_s3_g31.data.model
+package com.queue_hub.isis3510_s3_g31.data.users.remote.model
 
 import com.google.firebase.Timestamp
 

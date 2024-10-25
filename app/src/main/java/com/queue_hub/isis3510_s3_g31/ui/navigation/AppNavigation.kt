@@ -1,4 +1,4 @@
-package com.queue_hub.isis3510_s3_g31.navigation
+package com.queue_hub.isis3510_s3_g31.ui.navigation
 
 import LoginViewModel
 import androidx.compose.runtime.Composable
@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.MainScreen
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
@@ -27,16 +28,18 @@ fun AppNavigation(
     placesRepository: PlacesRepository,
     userRepository: UsersRepository,
     auth: FirebaseAuth,
-    db: FirebaseFirestore
+    db: FirebaseFirestore,
+    userPreferencesRepository: UserPreferencesRepository,
+    startDestination: Any
 ) {
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination= Login
+        startDestination= startDestination
     ){
         composable<Login> {
-           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController, auth = auth )
+           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository, userPreferencesRepository = userPreferencesRepository) , navController = navController, auth = auth )
         }
         composable<Main> {
             MainScreen(navController = navController, placesRepository = placesRepository)
@@ -52,7 +55,7 @@ fun AppNavigation(
             DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = placesRepository))
         }
         composable<SignUp> {
-            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth), auth = auth, db = db)
+            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, userPreferencesRepository = userPreferencesRepository), auth = auth, db = db)
         }
 
     }
