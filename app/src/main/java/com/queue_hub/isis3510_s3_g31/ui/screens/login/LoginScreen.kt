@@ -4,7 +4,6 @@ import LoginState
 import LoginViewModel
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -50,9 +45,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.queue_hub.isis3510_s3_g31.R
-import com.queue_hub.isis3510_s3_g31.navigation.Detail
-import com.queue_hub.isis3510_s3_g31.navigation.Main
-import com.queue_hub.isis3510_s3_g31.navigation.SignUp
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Main
+import com.queue_hub.isis3510_s3_g31.ui.navigation.SignUp
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: FirebaseAuth){
@@ -60,7 +54,11 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: F
     LaunchedEffect(loginState) {
         when (loginState) {
             is LoginState.Success -> {
-                navController.navigate(Main)
+                navController.navigate(Main){
+                    popUpTo(navController.graph.startDestinationId) {
+                        inclusive = true
+                    }
+                }
             }
             else -> {} // No hacer nada para otros estados
         }
@@ -68,7 +66,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: F
     Box(
         Modifier
             .fillMaxSize()
-            .background(colorScheme.background) // El fondo cubre toda la pantalla
+            .background(colorScheme.background)
     ) {
         Box(
             Modifier

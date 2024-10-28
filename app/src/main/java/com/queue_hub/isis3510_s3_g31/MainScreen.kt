@@ -20,15 +20,10 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.room.Room
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
-import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
-import com.queue_hub.isis3510_s3_g31.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
