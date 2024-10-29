@@ -32,7 +32,7 @@ import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.places.Places
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
-import com.queue_hub.isis3510_s3_g31.navigation.Detail
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 
 
 @Composable

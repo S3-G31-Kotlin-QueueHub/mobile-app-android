@@ -29,6 +29,8 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Home
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
@@ -124,7 +126,7 @@ fun HeaderImage(modifier: Modifier, navController: NavController) {
         verticalAlignment = Alignment.CenterVertically, // Alinear verticalmente al centro
         horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre los elementos
     ) {
-        IconButton(onClick = { navController.navigate("home") }) { // Asegúrate de que "home" sea el nombre correcto de tu ruta
+        IconButton(onClick = { navController.navigate(Home) }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back",
