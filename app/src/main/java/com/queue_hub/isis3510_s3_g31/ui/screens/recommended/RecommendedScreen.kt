@@ -31,12 +31,15 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 
 
 @Composable
 fun RecommendedScreen(
     navController: NavController,
-    recommendedViewModel: RecommendedViewModel
+    recommendedViewModel: RecommendedViewModel,
+    repository: PlacesRepository
 ){
     val state = recommendedViewModel.state
 
@@ -56,7 +59,7 @@ fun RecommendedScreen(
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
-            Recommended(modifier = Modifier, state = state)
+            Recommended(modifier = Modifier, state = state, repository = repository, navController = navController)
         }
 
 
@@ -64,7 +67,7 @@ fun RecommendedScreen(
 }
 
 @Composable
-fun Recommended (modifier: Modifier, state: RecommendedViewState){
+fun Recommended (modifier: Modifier, state: RecommendedViewState, repository: PlacesRepository, navController: NavController){
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -88,15 +91,15 @@ fun Recommended (modifier: Modifier, state: RecommendedViewState){
             )
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        RecommendedPlacesList(modifier = Modifier, places = state.places)
+        RecommendedPlacesList(modifier = Modifier, places = state.places, state = state, repository = repository, navController = navController)
     }
 }
 
 @Composable
-fun RecommendedPlacesList(modifier: Modifier, places: List<Places>){
+fun RecommendedPlacesList(modifier: Modifier, places: List<Places>, state: RecommendedViewState, repository: PlacesRepository, navController: NavController){
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(places) { place ->
-            PlaceCard(place = place, onClick = { /* Manejar clic */ })
+            PlaceCard(place = place, onClick = { repository.setPlace(place);navController.navigate(Detail)})
 
         }
     }
