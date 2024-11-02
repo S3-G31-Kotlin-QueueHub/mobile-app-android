@@ -11,7 +11,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
@@ -35,14 +35,12 @@ class DetailViewModel (private val placesRepository: PlacesRepository, private v
             userId = userPreferencesRepository.userId.first()
             state = state.copy(
                 place = getPlace(),
-
-
             )
         }
     }
 
 
-     fun getPlace() : Places{
+     suspend fun getPlace() : Place{
             return placesRepository.getPlace()
     }
 

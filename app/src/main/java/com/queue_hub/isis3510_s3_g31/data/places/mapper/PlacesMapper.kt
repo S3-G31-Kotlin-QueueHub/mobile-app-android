@@ -1,21 +1,20 @@
 package com.queue_hub.isis3510_s3_g31.data.places.mapper
 
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.local.entity.PlaceEntity
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlaceFirestore
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesResponseItem
-import kotlin.math.max
 
 
-fun Places.toEntity(): PlaceEntity{
+fun Place.toEntity(): PlaceEntity{
     return PlaceEntity(
         id = this.id,
-        idFranquicia = this.idFranquicia,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        telefono = this.telefono,
-        latitud = this.latitud,
-        longitud = this.longitud,
-        urlImg = this.urlImg,
+        name = this.name,
+        address = this.address,
+        phone = this.phone,
+        localization = this.localization.toString(),
+        image = this.image,
         averageWaitingTime = this.averageWaitingTime,
         averageWaitingTimeLastHour = this.averageWaitingTimeLastHour,
         averageScoreReview = this.averageScoreReview,
@@ -24,16 +23,16 @@ fun Places.toEntity(): PlaceEntity{
 }
 
 
-fun PlaceEntity.toDomain() : Places{
-    return Places(
+
+
+fun PlaceEntity.toDomain() : Place {
+    return Place(
         id = this.id,
-        idFranquicia = this.idFranquicia,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        telefono = this.telefono,
-        latitud = this.latitud,
-        longitud = this.longitud,
-        urlImg = this.urlImg,
+        name = this.name,
+        address = this.address,
+        phone = this.phone,
+        localization = this.localization,
+        image = this.image,
         averageWaitingTime = this.averageWaitingTime,
         averageWaitingTimeLastHour = this.averageWaitingTimeLastHour,
         averageScoreReview = this.averageScoreReview,
@@ -41,21 +40,18 @@ fun PlaceEntity.toDomain() : Places{
     )
 }
 
-fun PlacesResponseItem.toDomain() : Places{
-    val finalLatitud = this.latitud.toDouble()
-    val finalLongitud = this.longitud.toDouble()
+fun PlacesResponseItem.toDomain() : Place {
+
     val finalAWT = this.averageWaitingTime.toDouble().toInt()
     val finalAWTLastHour = this.averageWaitingTimeLastHour.toDouble().toInt()
     val finalAverageScoreReview = (0..5).random()
-    return Places(
+    return Place(
         id = this.id,
-        idFranquicia = this.idFranquicia,
-        nombre = this.nombre,
-        direccion = this.direccion,
-        telefono = this.telefono,
-        latitud = finalLatitud,
-        longitud = finalLongitud,
-        urlImg = this.urlImg,
+        name = this.name,
+        address = this.address,
+        phone = this.phone,
+        localization = this.localization,
+        image = this.image,
         averageWaitingTime = finalAWT,
         averageWaitingTimeLastHour = finalAWTLastHour,
         averageScoreReview = finalAverageScoreReview.toFloat(),
@@ -63,3 +59,30 @@ fun PlacesResponseItem.toDomain() : Places{
     )
 }
 
+
+fun CommonPlaceFirestore.toDomain() : CommonPlace {
+    return CommonPlace(
+        id = this.id,
+        name = this.name,
+        address = this.address,
+        phone = this.phone,
+        image = this.image,
+        lastVisit = this.lastVisit.toString(),
+        city = this.city
+    )
+}
+
+fun CommonPlace.toPlace() : Place {
+    return Place(
+        id = this.id,
+        name = this.name,
+        address = this.address,
+        phone = this.phone,
+        localization = "",
+        image = this.image,
+        averageWaitingTime = 0,
+        averageWaitingTimeLastHour = 0,
+        averageScoreReview = 0f,
+        bestAverageFrame = ""
+    )
+}

@@ -6,12 +6,10 @@ data class PlacesResponseItem(
     val betterTime: String,
     val cont: String,
     val contLastHour: String,
-    val direccion: String,
+    val address: String,
     val id: String,
-    val idFranquicia: String,
-    val latitud: String,
-    val longitud: String,
-    val nombre: String,
-    val telefono: String,
-    val urlImg: String
+    val localization: String,
+    val name: String,
+    val phone: String,
+    val image: String
 )

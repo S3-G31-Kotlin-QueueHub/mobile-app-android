@@ -229,7 +229,7 @@ fun ClickableVerticalOption(
 
         ) {
             Text(
-                text = detailViewModel.state.place.nombre,
+                text = detailViewModel.state.place.name,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )

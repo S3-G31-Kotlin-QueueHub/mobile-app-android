@@ -4,11 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
-import com.queue_hub.isis3510_s3_g31.data.users.remote.LoginRequest
 import com.queue_hub.isis3510_s3_g31.data.users.remote.model.Turn
-import com.queue_hub.isis3510_s3_g31.data.users.remote.model.User
-import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpState
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import java.util.UUID
 import kotlin.coroutines.resume
