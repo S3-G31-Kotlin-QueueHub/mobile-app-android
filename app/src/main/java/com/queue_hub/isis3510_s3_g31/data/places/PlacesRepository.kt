@@ -19,6 +19,20 @@ class PlacesRepository (
     private val placesDao: PlacesDao,
     private  val api: PlacesApi,
     private val db: FirebaseFirestore
+    private var place: Places = Places(
+        id = "1",
+        idFranquicia = "Unknown",
+        nombre = "No name",
+        direccion = "No address",
+        telefono = "000-000-000",
+        latitud = 4.60971,
+        longitud = -74.08175,
+        urlImg = "https://24ai.tech/es/wp-content/uploads/sites/5/2023/10/01_product_1_sdelat-kvadratnym-3-1.jpg",
+        averageWaitingTime = 0,
+        averageWaitingTimeLastHour = 0,
+        averageScoreReview = 0f,
+        bestAverageFrame = "empty"
+    )
 ){
 
     suspend fun getCommonPlaces(idUser : String ): Flow<List<CommonPlace>> = callbackFlow {
@@ -87,7 +101,10 @@ class PlacesRepository (
     }
     suspend fun getPlace (): Place {
         //TO DO
-        return getPlaces()[0]
+        return place
+    }
+    fun setPlace (place: Places){
+        this.place = place
     }
 
     suspend fun getPlaces(): List<Place> {
