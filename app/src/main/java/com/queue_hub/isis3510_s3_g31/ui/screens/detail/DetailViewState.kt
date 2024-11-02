@@ -16,6 +16,5 @@ data class DetailViewState(
         averageWaitingTimeLastHour = 10,
         averageScoreReview = 4.5f,
         bestAverageFrame = "12:00-14:00"
-    ),
-    val isLoading: Boolean = false
+    )
 )
