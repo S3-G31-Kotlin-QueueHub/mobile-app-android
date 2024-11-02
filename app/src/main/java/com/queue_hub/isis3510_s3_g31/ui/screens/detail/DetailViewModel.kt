@@ -35,14 +35,12 @@ class DetailViewModel (private val placesRepository: PlacesRepository, private v
             userId = userPreferencesRepository.userId.first()
             state = state.copy(
                 place = getPlace(),
-
-
             )
         }
     }
 
 
-     fun getPlace() : Places{
+     suspend fun getPlace() : Place{
             return placesRepository.getPlace()
     }
 

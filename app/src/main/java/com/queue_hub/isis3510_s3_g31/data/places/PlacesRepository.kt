@@ -18,16 +18,14 @@ import kotlinx.coroutines.flow.callbackFlow
 class PlacesRepository (
     private val placesDao: PlacesDao,
     private  val api: PlacesApi,
-    private val db: FirebaseFirestore
-    private var place: Places = Places(
+    private val db: FirebaseFirestore,
+    private var place: Place = Place(
         id = "1",
-        idFranquicia = "Unknown",
-        nombre = "No name",
-        direccion = "No address",
-        telefono = "000-000-000",
-        latitud = 4.60971,
-        longitud = -74.08175,
-        urlImg = "https://24ai.tech/es/wp-content/uploads/sites/5/2023/10/01_product_1_sdelat-kvadratnym-3-1.jpg",
+        name = "No name",
+        address = "No address",
+        phone = "000-000-000",
+        localization ="",
+        image = "https://24ai.tech/es/wp-content/uploads/sites/5/2023/10/01_product_1_sdelat-kvadratnym-3-1.jpg",
         averageWaitingTime = 0,
         averageWaitingTimeLastHour = 0,
         averageScoreReview = 0f,
@@ -43,8 +41,14 @@ class PlacesRepository (
                 return@addSnapshotListener
             }
 
-            if (snapshot != null && snapshot.exists()) {
+            if (snapshot != null ) {
                 try {
+
+                    if (!snapshot.exists()) {
+                        trySend(emptyList())
+                        return@addSnapshotListener
+                    }
+
                     val commonPlacesData = snapshot.data?.get("commonPlaces") as? List<Map<String, Any>>
                     println("commonPlacesData: $commonPlacesData")
                     val commonPlaces = commonPlacesData?.map {
@@ -73,7 +77,7 @@ class PlacesRepository (
     }
 
 
-
+    /*
     suspend fun getCommonPlacesByUser(idUser : String ): List<Place>{
         try {
             val response = api.getCommonPlacesByUserId(idUser)
@@ -85,7 +89,7 @@ class PlacesRepository (
         }catch (e: Exception){
             return getPlaces()
         }
-    }
+    }*/
 
     suspend fun getRecommendedPlaces (): List<Place>{
         try {
@@ -103,7 +107,7 @@ class PlacesRepository (
         //TO DO
         return place
     }
-    fun setPlace (place: Places){
+    fun setPlace (place: Place){
         this.place = place
     }
 

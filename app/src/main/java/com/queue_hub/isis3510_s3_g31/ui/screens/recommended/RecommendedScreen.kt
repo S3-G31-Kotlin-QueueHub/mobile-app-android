@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 
@@ -96,7 +96,7 @@ fun Recommended (modifier: Modifier, state: RecommendedViewState, repository: Pl
 }
 
 @Composable
-fun RecommendedPlacesList(modifier: Modifier, places: List<Places>, state: RecommendedViewState, repository: PlacesRepository, navController: NavController){
+fun RecommendedPlacesList(modifier: Modifier, places: List<Place>, state: RecommendedViewState, repository: PlacesRepository, navController: NavController){
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(places) { place ->
             PlaceCard(place = place, onClick = { repository.setPlace(place);navController.navigate(Detail)})
@@ -142,7 +142,7 @@ fun PlaceCard(place: Place, onClick: () -> Unit){
 
             Column {
                 Text(
-                    text = place.nombre,
+                    text = place.name,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +31,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -40,13 +40,17 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier,
-    homeViewModel: HomeViewModel
+    homeViewModel: HomeViewModel,
+    placesRepository: PlacesRepository
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
@@ -55,12 +59,17 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier, state = state)
+        Home(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository)
     }
 }
 
 @Composable
-fun Home (modifier: Modifier, state: HomeViewState){
+fun Home (
+    modifier: Modifier,
+    state: HomeViewState,
+    navController: NavController,
+    placesRepository: PlacesRepository
+){
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -80,7 +89,7 @@ fun Home (modifier: Modifier, state: HomeViewState){
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        CommonPlacesList(modifier = Modifier, state = state)
+        CommonPlacesList(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository)
     }
 
 }
@@ -213,20 +222,34 @@ fun ClickableHorizontalOption(
 }
 
 @Composable
-fun CommonPlacesList(modifier: Modifier, state: HomeViewState){
+fun CommonPlacesList(
+    modifier: Modifier,
+    state: HomeViewState,
+    navController: NavController,
+    placesRepository: PlacesRepository
+){
     when (state) {
         is HomeViewState.Loading -> {
             CircularProgressIndicator()
         }
         is HomeViewState.Success -> {
-            LazyColumn(
-                modifier = modifier,
-                contentPadding = PaddingValues(bottom = 60.dp)) {
-                itemsIndexed(state.commonPlaces) { _, place ->
-                    CommonPlaceCard(place = place, onClick = { /* Manejar clic */ })
+            if(state.commonPlaces.isEmpty()){
+                Text(
+                    text = stringResource(R.string.home_no_common_places),
+                    textAlign = TextAlign.Center,
+                )
+            }else{
+                LazyColumn(
+                    modifier = modifier,
+                    contentPadding = PaddingValues(bottom = 60.dp)) {
+                    itemsIndexed(state.commonPlaces) { _, commonPlace ->
+                        CommonPlaceCard(place = commonPlace, onClick = {
+                            placesRepository.setPlace(commonPlace.toPlace())
+                            navController.navigate(Detail)
+                        })
+                    }
                 }
             }
-
         }
         is HomeViewState.Error -> {
             Text(text = state.message)
@@ -244,7 +267,8 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .height(100.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.onPrimary)
@@ -267,6 +291,10 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
                     text = place.address,
                     style = MaterialTheme.typography.bodyMedium
                 )
+                Text(
+                    text = place.city,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
 
 
@@ -274,14 +302,14 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
                 model = place.image,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(90.dp),
-                contentScale = ContentScale.Crop
+                    .width(120.dp),
+                contentScale = ContentScale.FillHeight
             ) { requestBuilder ->
                 requestBuilder
                     .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.comercio)
-                    .error(R.drawable.comercio)
+                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .placeholder(R.drawable.comida__1_)
+                    .error(R.drawable.comida__1_)
                     .transition(DrawableTransitionOptions.withCrossFade())
             }
         }

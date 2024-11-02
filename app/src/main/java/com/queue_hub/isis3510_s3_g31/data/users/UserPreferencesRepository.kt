@@ -33,9 +33,9 @@ class UserPreferencesRepository(private val context: Context) {
         .map { preferences ->
             preferences[IS_LOGGED_IN_KEY] ?: false
         }
-    val userId: Flow<String?> = context.dataStore.data
+    val userId: Flow<String> = context.dataStore.data
         .map { preferences ->
-            preferences[USER_ID_KEY] ?: ""
+            preferences[USER_ID_KEY].toString()
         }
 
     suspend fun clearUserData() {
