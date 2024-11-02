@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import kotlinx.coroutines.launch
 
@@ -24,7 +24,7 @@ class DetailViewModel (private val placesRepository: PlacesRepository): ViewMode
     }
 
 
-    suspend fun getPlace() : Places{
+    suspend fun getPlace() : Place {
             return placesRepository.getPlace()
     }
 

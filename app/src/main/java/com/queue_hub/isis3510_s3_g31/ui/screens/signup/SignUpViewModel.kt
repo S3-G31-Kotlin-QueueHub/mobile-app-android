@@ -11,7 +11,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
-import com.queue_hub.isis3510_s3_g31.data.users.remote.model.User
+import com.queue_hub.isis3510_s3_g31.data.users.model.User
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
@@ -50,7 +50,6 @@ class SignUpViewModel(
             _signUpState.value = SignUpState.Loading
             try {
 
-
                 if((_validEmail.value == true) && (_validPassword.value == true)){
                     val emailValue = _email.value.orEmpty()
                     val passwordValue = _password.value.orEmpty()
@@ -67,39 +66,37 @@ class SignUpViewModel(
                     auth.createUserWithEmailAndPassword(emailValue, passwordValue)
                         .addOnCompleteListener { task ->
                             if (task.isSuccessful) {
-                                if (task.isSuccessful) {
+                                val userId = auth.currentUser?.uid
 
-                                    val userId = auth.currentUser?.uid
+                                val user = User(
+                                    name = name.value.orEmpty(),
+                                    email = email.value.orEmpty(),
+                                    phone = phone.value.orEmpty(),
+                                    isAdmin = false,
+                                    createdAt = Timestamp.now()
+                                )
 
-                                    val user = User(
-                                        name = name.value.orEmpty(),
-                                        email = email.value.orEmpty(),
-                                        phone = phone.value.orEmpty(),
-                                        isAdmin = false,
-                                        createdAt = Timestamp.now()
-                                    )
+                                userId?.let { uid ->
+                                    db.collection("users")
+                                        .document(uid)
+                                        .set(user)
+                                        .addOnSuccessListener {
 
-                                    userId?.let { uid ->
-                                        db.collection("users")
-                                            .document(uid)
-                                            .set(user)
-                                            .addOnSuccessListener {
-
-                                                viewModelScope.launch {
-                                                    userPreferencesRepository.saveUserData(
-                                                        email.value.orEmpty(),
-                                                        uid
-                                                    )
-                                                }
-
-                                                _signUpState.value = SignUpState.Success
+                                            viewModelScope.launch {
+                                                userPreferencesRepository.saveUserData(
+                                                    email.value.orEmpty(),
+                                                    uid
+                                                )
                                             }
-                                            .addOnFailureListener { e ->
-                                                _signUpState.value =
-                                                    SignUpState.Error("Error saving user data: ${e.message}")
-                                            }
-                                    }
+
+                                            _signUpState.value = SignUpState.Success
+                                        }
+                                        .addOnFailureListener { e ->
+                                            _signUpState.value =
+                                                SignUpState.Error("Error saving user data: ${e.message}")
+                                        }
                                 }
+
                             } else {
                                 _signUpState.value = SignUpState.Error("This email has already register, please sign in or try with a different email.")
                                 Log.w(TAG, "createUserWithEmail:failure", task.exception)

@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 
 
 @Composable
@@ -93,7 +93,7 @@ fun Recommended (modifier: Modifier, state: RecommendedViewState){
 }
 
 @Composable
-fun RecommendedPlacesList(modifier: Modifier, places: List<Places>){
+fun RecommendedPlacesList(modifier: Modifier, places: List<Place>){
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(places) { place ->
             PlaceCard(place = place, onClick = { /* Manejar clic */ })
@@ -120,7 +120,7 @@ fun HeaderImage(modifier: Modifier) {
 }
 
 @Composable
-fun PlaceCard(place: Places, onClick: () -> Unit){
+fun PlaceCard(place: Place, onClick: () -> Unit){
     Card(
         modifier = Modifier
             .fillMaxWidth()

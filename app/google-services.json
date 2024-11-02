@@ -7,7 +7,7 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:186003343068:android:125c6b13156ef0f1d4d619",
+        "mobilesdk_app_id": "1:186003343068:android:8e22933de79101b5d4d619",
         "android_client_info": {
           "package_name": "com.queue_hub.isis3510_s3_g31"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyDZSBXxbfvhadZjn8L4uBhtnymPS9Rs5UE"
+          "current_key": "AIzaSyAJUhNg3tEVWg6hx5klL-kJYxQKmvewQOs"
         }
       ],
       "services": {

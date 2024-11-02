@@ -1,12 +1,13 @@
 package com.queue_hub.isis3510_s3_g31.data.places.mapper
 
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.local.entity.PlaceEntity
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlaceFirestore
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesResponseItem
-import kotlin.math.max
 
 
-fun Places.toEntity(): PlaceEntity{
+fun Place.toEntity(): PlaceEntity{
     return PlaceEntity(
         id = this.id,
         idFranquicia = this.idFranquicia,
@@ -24,8 +25,10 @@ fun Places.toEntity(): PlaceEntity{
 }
 
 
-fun PlaceEntity.toDomain() : Places{
-    return Places(
+
+
+fun PlaceEntity.toDomain() : Place {
+    return Place(
         id = this.id,
         idFranquicia = this.idFranquicia,
         nombre = this.nombre,
@@ -41,13 +44,13 @@ fun PlaceEntity.toDomain() : Places{
     )
 }
 
-fun PlacesResponseItem.toDomain() : Places{
+fun PlacesResponseItem.toDomain() : Place {
     val finalLatitud = this.latitud.toDouble()
     val finalLongitud = this.longitud.toDouble()
     val finalAWT = this.averageWaitingTime.toDouble().toInt()
     val finalAWTLastHour = this.averageWaitingTimeLastHour.toDouble().toInt()
     val finalAverageScoreReview = (0..5).random()
-    return Places(
+    return Place(
         id = this.id,
         idFranquicia = this.idFranquicia,
         nombre = this.nombre,
@@ -63,3 +66,15 @@ fun PlacesResponseItem.toDomain() : Places{
     )
 }
 
+
+fun CommonPlaceFirestore.toDomain() : CommonPlace {
+    return CommonPlace(
+        id = this.id,
+        name = this.name,
+        address = this.address,
+        phone = this.phone,
+        image = this.image,
+        lastVisit = this.lastVisit.toString(),
+        city = this.city
+    )
+}

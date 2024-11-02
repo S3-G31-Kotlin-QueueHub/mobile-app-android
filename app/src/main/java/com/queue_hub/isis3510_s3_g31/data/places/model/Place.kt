@@ -1,6 +1,6 @@
-package com.queue_hub.isis3510_s3_g31.data.places
+package com.queue_hub.isis3510_s3_g31.data.places.model
 
-data class Places(
+data class Place(
     val id : String,
     val idFranquicia: String,
     val nombre: String,

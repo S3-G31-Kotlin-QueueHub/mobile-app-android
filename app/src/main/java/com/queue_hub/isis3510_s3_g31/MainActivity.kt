@@ -31,6 +31,9 @@ class MainActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
     private lateinit var userPreferencesRepository: UserPreferencesRepository
+    private lateinit var placesRepository: PlacesRepository
+
+
     private val viewModel by viewModels<MainViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,10 +50,12 @@ class MainActivity : ComponentActivity() {
         auth = Firebase.auth
         db = Firebase.firestore
         userPreferencesRepository = UserPreferencesRepository(applicationContext)
+
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
-        val repositoryPlaces= PlacesRepository(placesDAO, api = PlacesApi.instance)
+        placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
         val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
+
 
         viewModel.checkAuthState(userPreferencesRepository)
 
@@ -60,7 +65,7 @@ class MainActivity : ComponentActivity() {
             ISIS3510S3G31Theme {
                 AppNavigation(
                     startDestination = startDestination,
-                    placesRepository = repositoryPlaces,
+                    placesRepository = placesRepository,
                     userRepository = repositoryUsers,
                     auth = auth,
                     db = db,

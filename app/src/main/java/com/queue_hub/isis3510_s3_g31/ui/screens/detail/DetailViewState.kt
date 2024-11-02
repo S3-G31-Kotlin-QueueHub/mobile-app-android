@@ -1,9 +1,9 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
 
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 
 data class DetailViewState(
-    val place: Places = Places(
+    val place: Place = Place(
         id = "1",
         idFranquicia = "Franquicia_123",
         nombre = "Café del Sol",

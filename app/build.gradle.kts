@@ -55,6 +55,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.glide.compose)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.androidx.datastore.preferences)
     implementation(platform(libs.firebase.bom))

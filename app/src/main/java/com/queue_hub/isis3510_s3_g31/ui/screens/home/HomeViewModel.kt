@@ -6,20 +6,28 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel ( private val placesRepository: PlacesRepository): ViewModel(){
-    var state by mutableStateOf(HomeViewState())
-        private set
+
+
+    private val _uiState = MutableStateFlow<HomeViewState>(HomeViewState.Loading)
+    val uiState: StateFlow<HomeViewState> = _uiState
 
     init {
+        getCommonPlaces()
+    }
+
+    private fun getCommonPlaces(){
         viewModelScope.launch {
-            delay(1000)
-            state = state.copy(
-                places = placesRepository.getCommonPlacesByUser("69aba19d-d8a3-4033-812f-146fa0cd1c98"),
-                isLoading = false
-            )
+            placesRepository.getCommonPlaces("NuHTofO46WPkFZksEL7tRFheP593").collect{ commonPlaces ->
+                _uiState.value = HomeViewState.Success(commonPlaces)
+            }
         }
     }
 }
