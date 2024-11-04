@@ -20,6 +20,7 @@ import com.google.firebase.ktx.Firebase
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
+import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
@@ -34,6 +35,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var db: FirebaseFirestore
     private lateinit var userPreferencesRepository: UserPreferencesRepository
     private lateinit var placesRepository: PlacesRepository
+    private lateinit var queuesRepository: QueuesRepository
 
 
     private val viewModel by viewModels<MainViewModel>()
@@ -58,7 +60,7 @@ class MainActivity : ComponentActivity() {
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
         val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
         val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db)
-
+        queuesRepository = QueuesRepository(db)
 
         viewModel.checkAuthState(userPreferencesRepository)
 
@@ -73,7 +75,8 @@ class MainActivity : ComponentActivity() {
                     auth = auth,
                     db = db,
                     userPreferencesRepository = userPreferencesRepository,
-                    turnsRepository = repositoryTurns
+                    turnsRepository = repositoryTurns,
+                    queuesRepository = queuesRepository
                 )
             }
         }

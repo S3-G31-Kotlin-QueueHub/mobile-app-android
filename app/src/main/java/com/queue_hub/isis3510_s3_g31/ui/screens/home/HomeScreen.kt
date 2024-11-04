@@ -307,7 +307,7 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
             ) { requestBuilder ->
                 requestBuilder
                     .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .placeholder(R.drawable.comida__1_)
                     .error(R.drawable.comida__1_)
                     .transition(DrawableTransitionOptions.withCrossFade())
