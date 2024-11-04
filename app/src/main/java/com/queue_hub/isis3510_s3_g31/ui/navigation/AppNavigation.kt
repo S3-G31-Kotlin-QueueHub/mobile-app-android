@@ -1,6 +1,6 @@
 package com.queue_hub.isis3510_s3_g31.ui.navigation
 
-import LoginViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.MainScreen
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
@@ -22,6 +23,8 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitViewModel
 
 
 @Composable
@@ -32,7 +35,8 @@ fun AppNavigation(
     db: FirebaseFirestore,
     userPreferencesRepository: UserPreferencesRepository,
     turnsRepository: TurnsRepository,
-    startDestination: Any
+    startDestination: Any,
+    queuesRepository: QueuesRepository
 ) {
     val navController = rememberNavController()
 
@@ -44,7 +48,7 @@ fun AppNavigation(
            LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository, userPreferencesRepository = userPreferencesRepository) , navController = navController, auth = auth )
         }
         composable<Main> {
-            MainScreen(navController = navController, placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository =turnsRepository )
+            MainScreen(navController = navController, placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository )
         }
         composable<Home> {
             HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( placesRepository, userPreferencesRepository ), placesRepository = placesRepository)
@@ -58,6 +62,9 @@ fun AppNavigation(
         }
         composable<SignUp> {
             SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, userPreferencesRepository = userPreferencesRepository), auth = auth, db = db)
+        }
+        composable<Wait> {
+            WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))
         }
 
     }

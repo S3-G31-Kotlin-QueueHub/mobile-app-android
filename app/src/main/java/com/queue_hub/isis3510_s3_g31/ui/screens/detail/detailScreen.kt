@@ -52,6 +52,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.Home
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
@@ -104,9 +105,11 @@ fun Buttons(modifier: Modifier, navController: NavController, detailViewModel: D
                 scope.launch {
                 if(!queuedState){
                     detailViewModel.addTurn()
-
-                    navController.navigateUp()
-
+                    navController.navigate(Wait){
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
                 }else{
 
                     navController.navigate(Home);

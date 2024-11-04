@@ -1,3 +1,5 @@
+package com.queue_hub.isis3510_s3_g31.ui.screens.login
+
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -6,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
@@ -40,7 +41,8 @@ class LoginViewModel(
                 }else if(emailValue == ""){
                     _loginState.value = LoginState.Error("Please fill the email field")
                 }else{
-                    _loginState.value = LoginState.Error("Your sign in credentials are invalid, please check and try again")
+                    _loginState.value =
+                        LoginState.Error("Your sign in credentials are invalid, please check and try again")
                 }
             }else{
                 try {
@@ -57,7 +59,8 @@ class LoginViewModel(
                                 _loginState.value = LoginState.Success
 
                             } else {
-                                _loginState.value = LoginState.Error("Your sign in credentials are incorrect, please check and try again")
+                                _loginState.value =
+                                    LoginState.Error("Your sign in credentials are incorrect, please check and try again")
                             }
                         }
                 } catch (e: Exception) {

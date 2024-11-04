@@ -19,4 +19,12 @@
     <string name="sign_in">Sign In</string>
     <string name="header_text">From anywhere to anywhere</string>
     <string name="home_no_common_places">Start to get in queues to see your common places :)</string>
+    <string name="thank_you_for_being_patient">Thank you for being patient</string>
+    <string name="your_current_position_is">Your turn number is</string>
+    <string name="the_approximated_waiting_time_is">The approximated waiting time is:</string>
+    <string name="i_don_t_need_it_anymore">I don´t need it anymore</string>
+    <string name="the_queue_is_currently_on_turn">The queue is currently on turn</string>
+    <string name="it_is_your_turn">It is your turn</string>
+    <string name="go_to_the_place_and_take_your_order">Go to the place and take your order :)</string>
+    <string name="understood">Understood</string>
 </resources>

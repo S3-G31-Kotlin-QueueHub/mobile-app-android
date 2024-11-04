@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.ui.components.BottomNavItem
@@ -33,10 +34,12 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
 
 @Composable
-fun MainScreen(navController: NavController, placesRepository: PlacesRepository, userPreferencesRepository: UserPreferencesRepository, turnsRepository: TurnsRepository) {
+fun MainScreen(navController: NavController, placesRepository: PlacesRepository, userPreferencesRepository: UserPreferencesRepository, turnsRepository: TurnsRepository, queuesRepository: QueuesRepository) {
 
     val navItemList = listOf(
         BottomNavItem(
@@ -106,7 +109,8 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository,
             navController = navController,
             placesRepository = placesRepository,
             userPreferencesRepository = userPreferencesRepository,
-            turnsRepository = turnsRepository
+            turnsRepository = turnsRepository,
+            queuesRepository = queuesRepository
             )
 
         }
@@ -114,7 +118,7 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository,
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository, userPreferencesRepository: UserPreferencesRepository, turnsRepository: TurnsRepository){
+fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository, userPreferencesRepository: UserPreferencesRepository, turnsRepository: TurnsRepository, queuesRepository: QueuesRepository){
 
     when(selectedIndex){
 
@@ -127,15 +131,7 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
             ),
             placesRepository = placesRepository
         )
-        1 -> HomeScreen(
-            navController = navController,
-            modifier = Modifier,
-            homeViewModel = HomeViewModel(
-                placesRepository = placesRepository,
-                userPreferencesRepository = userPreferencesRepository
-            ),
-            placesRepository = placesRepository
-        )
+        1 -> WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
         3 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
     }

@@ -15,10 +15,7 @@ import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
-import com.queue_hub.isis3510_s3_g31.data.users.remote.model.Turn
-import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpState
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.launch
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")

@@ -19,3 +19,6 @@ object Detail
 
 @Serializable
 object SignUp
+
+@Serializable
+object Wait

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -24,7 +25,7 @@ class HomeViewModel(
 
     private fun getCommonPlaces(){
 
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             val idUser = userPreferencesRepository.userId.first()
             println("idUser: $idUser")
 
