@@ -19,6 +19,8 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.login.LoginScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpScreen
@@ -65,6 +67,9 @@ fun AppNavigation(
         }
         composable<Wait> {
             WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))
+        }
+        composable<Profile> {
+            ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, userPreferencesRepository=userPreferencesRepository, turnsRepository = turnsRepository))
         }
 
     }
