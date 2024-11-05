@@ -32,6 +32,8 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitScreen
@@ -133,6 +135,6 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
         )
         1 -> WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
-        3 -> DetailScreen(navController = navController , detailViewModel = DetailViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
+        3 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
     }
 }
