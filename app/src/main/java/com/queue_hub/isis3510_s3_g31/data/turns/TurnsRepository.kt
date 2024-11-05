@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.tasks.await
 import kotlin.coroutines.resume
 
 
@@ -106,5 +107,15 @@ class TurnsRepository(
                 }
         }
     }
+    suspend fun getTurnsLength(placeId: String): Int {
+        var turnsCount = 0
+
+
+
+
+
+        return turnsCount
+    }
+
 
 }

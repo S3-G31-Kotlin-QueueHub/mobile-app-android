@@ -236,6 +236,11 @@ fun ClickableVerticalOption(
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )
+            Text(
+                text = detailViewModel.state.place.address,
+                style = MaterialTheme.typography.titleLarge.copy(),
+                textAlign = TextAlign.Center
+            )
             Image(
                 painter = image,
                 contentDescription = null,
@@ -259,7 +264,7 @@ fun ClickableVerticalOption(
 
         ) {
             Text(
-                text = "Average Waiting Time: ${userId} min",
+                text = "Average Waiting Time: ${detailViewModel.state.place.averageWaitingTime} min",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
@@ -271,7 +276,7 @@ fun ClickableVerticalOption(
             )
 
             Text(
-                text = "People on Queue: ${43}",
+                text = "People on Queue: ${detailViewModel.state.onQueue}",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
