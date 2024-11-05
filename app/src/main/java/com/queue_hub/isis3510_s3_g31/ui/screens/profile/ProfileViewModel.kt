@@ -16,8 +16,11 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.model.EndedTurn
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -28,6 +31,7 @@ class ProfileViewModel (private val placesRepository: PlacesRepository, private 
         private set
     var userId by mutableStateOf<String?>("null")
     var turns by mutableStateOf(emptyList<EndedTurn>())
+
 
     init {
         viewModelScope.launch {
@@ -52,9 +56,10 @@ class ProfileViewModel (private val placesRepository: PlacesRepository, private 
         CoroutineScope(Dispatchers.IO).launch {
             turnsRepository.getAllTurnsOfUser(state.id).collect { list ->
                 endedTurnsList.addAll(list)
+                turns = endedTurnsList;
             }
         }
-        turns = endedTurnsList;
+
         return endedTurnsList
     }
 
