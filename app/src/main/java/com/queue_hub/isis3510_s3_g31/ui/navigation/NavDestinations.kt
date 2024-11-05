@@ -22,3 +22,6 @@ object SignUp
 
 @Serializable
 object Wait
+
+@Serializable
+object Profile

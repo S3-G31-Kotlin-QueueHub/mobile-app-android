@@ -27,6 +27,8 @@ import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
+import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnDao
+import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
@@ -58,13 +60,15 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         auth = Firebase.auth
         db = Firebase.firestore
-        userPreferencesRepository = UserPreferencesRepository(applicationContext, db)
+        userPreferencesRepository = UserPreferencesRepository(applicationContext, db = db)
 
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
+        val turnDb = Room.databaseBuilder(this, TurnsDatabase::class.java , name="turns" ).build()
+        val turnDAO = turnDb.dao
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
         val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
-        val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db)
+        val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
         queuesRepository = QueuesRepository(db)
 
         viewModel.checkAuthState(userPreferencesRepository)
