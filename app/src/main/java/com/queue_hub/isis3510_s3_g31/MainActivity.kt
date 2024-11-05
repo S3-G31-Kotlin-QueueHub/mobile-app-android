@@ -1,14 +1,19 @@
 package com.queue_hub.isis3510_s3_g31
 
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.Manifest
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.room.Room
 import com.google.firebase.FirebaseApp
@@ -53,7 +58,7 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         auth = Firebase.auth
         db = Firebase.firestore
-        userPreferencesRepository = UserPreferencesRepository(applicationContext)
+        userPreferencesRepository = UserPreferencesRepository(applicationContext, db)
 
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
@@ -63,6 +68,8 @@ class MainActivity : ComponentActivity() {
         queuesRepository = QueuesRepository(db)
 
         viewModel.checkAuthState(userPreferencesRepository)
+        askNotificationPermission()
+
 
         setContent {
             val startDestination by viewModel.startDestination.collectAsState()
@@ -81,7 +88,31 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
+    private fun askNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) ==
+                PackageManager.PERMISSION_GRANTED) {
+            } else {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission(),
+    ) { isGranted: Boolean ->
+        if(isGranted){
+
+        } else {
+
+        }
+
+    }
+
 }
+
 
 
 

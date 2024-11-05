@@ -7,13 +7,14 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
 
-class UserPreferencesRepository(private val context: Context) {
+class UserPreferencesRepository(private val context: Context, private val db: FirebaseFirestore) {
     companion object {
         private val EMAIL_KEY = stringPreferencesKey("email")
         private val USER_ID_KEY = stringPreferencesKey("user_id")
@@ -28,7 +29,6 @@ class UserPreferencesRepository(private val context: Context) {
         }
     }
 
-
     val isLoggedIn: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             preferences[IS_LOGGED_IN_KEY] ?: false
@@ -42,5 +42,14 @@ class UserPreferencesRepository(private val context: Context) {
         context.dataStore.edit { preferences ->
             preferences.clear()
         }
+    }
+
+    suspend fun saveUserToken(token: String, idUser: String) {
+        db.collection("users")
+            .document(idUser)
+            .update("token", token)
+            .addOnSuccessListener {
+                println("Token saved successfully")
+            }
     }
 }

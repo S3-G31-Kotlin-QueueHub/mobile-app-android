@@ -57,14 +57,19 @@ fun WaitScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Wait(modifier = Modifier, navController =  navController, state = state)
+        Wait(modifier = Modifier, navController =  navController, state = state, waitViewModel = waitViewModel)
     }
 }
 
 
 
 @Composable
-fun Wait (modifier: Modifier, navController: NavController, state: WaitViewState){
+fun Wait (
+    modifier: Modifier,
+    navController: NavController,
+    state: WaitViewState,
+    waitViewModel: WaitViewModel
+){
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -72,7 +77,7 @@ fun Wait (modifier: Modifier, navController: NavController, state: WaitViewState
     ) {
         HeaderImage(modifier = Modifier, navController = navController )
         Spacer(modifier = Modifier.padding(16.dp))
-        WaitCard(modifier = Modifier, navController = navController, state = state)
+        WaitCard(modifier = Modifier, navController = navController, state = state, waitViewModel = waitViewModel)
         Spacer(modifier = Modifier.padding(16.dp))
     }
 }
@@ -106,7 +111,12 @@ fun HeaderImage(modifier: Modifier, navController: NavController) {
 }
 
 @Composable
-fun WaitCard(modifier: Modifier, navController: NavController, state: WaitViewState){
+fun WaitCard(
+    modifier: Modifier,
+    navController: NavController,
+    state: WaitViewState,
+    waitViewModel: WaitViewModel
+){
 
     when (state) {
         is WaitViewState.Loading -> {
@@ -119,7 +129,7 @@ fun WaitCard(modifier: Modifier, navController: NavController, state: WaitViewSt
             if(queue.currentTurnNumber == turn.turnNumber){
                 TurnInformation(navController = navController, modifier = modifier, turn = turn, queue = queue)
             }else{
-                WaitInformation(navController = navController, modifier = modifier, turn = turn, queue = queue)
+                WaitInformation(navController = navController, modifier = modifier, turn = turn, queue = queue, waitViewModel = waitViewModel)
             }
 
         }
@@ -132,7 +142,7 @@ fun WaitCard(modifier: Modifier, navController: NavController, state: WaitViewSt
 
 
 @Composable
-fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn, queue: Queue){
+fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn, queue: Queue, waitViewModel: WaitViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
     Card(
         modifier = modifier
             .padding(8.dp)
@@ -184,6 +194,7 @@ fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = {
+                    waitViewModel.cancelTurn()
                     navController.navigate(Main)
                 },
                 modifier = Modifier
