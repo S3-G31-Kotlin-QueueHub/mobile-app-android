@@ -15,42 +15,61 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.queue_hub.isis3510_s3_g31.R
-import com.queue_hub.isis3510_s3_g31.data.places.Places
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 
 @Composable
-fun HomeScreen(navController: NavController, modifier: Modifier, homeViewModel: HomeViewModel) {
-    val state = homeViewModel.state
+fun HomeScreen(
+    navController: NavController,
+    modifier: Modifier,
+    homeViewModel: HomeViewModel,
+    placesRepository: PlacesRepository
+) {
+    val state by homeViewModel.uiState.collectAsState()
 
     Box(
         Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier, state = state)
+        Home(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository)
     }
 }
 
 @Composable
-fun Home (modifier: Modifier, state: HomeViewState){
+fun Home (
+    modifier: Modifier,
+    state: HomeViewState,
+    navController: NavController,
+    placesRepository: PlacesRepository
+){
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -70,7 +89,7 @@ fun Home (modifier: Modifier, state: HomeViewState){
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        CommonPlacesList(modifier = Modifier, state = state)
+        CommonPlacesList(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository)
     }
 
 }
@@ -92,7 +111,6 @@ fun HeaderImage(modifier: Modifier) {
                 .size(width = 165.dp, height = 48.dp)
         )
     }
-
 }
 
 @Composable
@@ -204,59 +222,96 @@ fun ClickableHorizontalOption(
 }
 
 @Composable
-fun CommonPlacesList(modifier: Modifier, state: HomeViewState){
-    if (state.isLoading) {
-        CircularProgressIndicator() // Asegúrate de importarlo
-    } else {
-        LazyColumn(
-            modifier = modifier,
-            contentPadding = PaddingValues(bottom = 60.dp)) {
-            items(state.places) { place ->
-                CommonPlaceCard(place = place, onClick = { /* Manejar clic */ })
+fun CommonPlacesList(
+    modifier: Modifier,
+    state: HomeViewState,
+    navController: NavController,
+    placesRepository: PlacesRepository
+){
+    when (state) {
+        is HomeViewState.Loading -> {
+            CircularProgressIndicator()
+        }
+        is HomeViewState.Success -> {
+            if(state.commonPlaces.isEmpty()){
+                Text(
+                    text = stringResource(R.string.home_no_common_places),
+                    textAlign = TextAlign.Center,
+                )
+            }else{
+                LazyColumn(
+                    modifier = modifier,
+                    contentPadding = PaddingValues(bottom = 60.dp)) {
+                    itemsIndexed(state.commonPlaces) { _, commonPlace ->
+                        CommonPlaceCard(place = commonPlace, onClick = {
+                            placesRepository.setPlace(commonPlace.toPlace())
+                            navController.navigate(Detail)
+                        })
+                    }
+                }
             }
+        }
+        is HomeViewState.Error -> {
+            Text(text = state.message)
         }
     }
 }
 
 
 
+
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CommonPlaceCard(place: Places, onClick: () -> Unit) {
+fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
-            .clickable(onClick = onClick),
+            .clickable(onClick = onClick)
+            .height(100.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.onPrimary)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
 
-            Column {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp)
+            ) {
                 Text(
-                    text = place.nombre,
+                    text = place.name,
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = place.direccion,
+                    text = place.address,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Text(
+                    text = place.city,
                     style = MaterialTheme.typography.bodyMedium
                 )
             }
 
-            Image(
-                painter = painterResource(id = R.drawable.comercio),
+
+            GlideImage(
+                model = place.image,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(60.dp)
-                    .padding(end = 16.dp),
-                contentScale = ContentScale.Crop
-            )
+                    .width(120.dp),
+                contentScale = ContentScale.FillHeight
+            ) { requestBuilder ->
+                requestBuilder
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.comida__1_)
+                    .error(R.drawable.comida__1_)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+            }
         }
     }
 }

@@ -3,7 +3,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrains.kotlin.android)
     alias(libs.plugins.kotlinxSerialization)
-    id("kotlin-kapt")  // Añadido para Room
+    id("com.google.devtools.ksp") version "2.0.21-1.0.25"
+    id("com.google.gms.google-services")
 
 }
 
@@ -54,11 +55,19 @@ android {
 }
 
 dependencies {
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
+    implementation(libs.firebase.messaging.ktx)
+    implementation(libs.glide.compose)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
+    implementation(libs.androidx.room.runtime)
+    ksp(libs.androidx.room.compiler.v250)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.retrofit)
+    implementation(libs.converter.moshi)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

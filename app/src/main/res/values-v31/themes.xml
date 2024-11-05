@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.ISIS3510S3G31" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.App.Starting" parent="Theme.SplashScreen">
+        <item name="android:windowBackground">@color/custom_grey</item>
+        <item name="android:windowActionBar">false</item>
+        <item name= "android:windowNoTitle">true</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/queuehub</item>
+        <item name="postSplashScreenTheme">@style/Theme.ISIS3510S3G31</item>
+    </style>
+</resources>

@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">QueueHub</string>
-    <string name="login">Login</string>
+    <string name="login">Sign In</string>
     <string name="email">Email</string>
+    <string name="phone">Phone</string>
+    <string name="name">Name</string>
     <string name="password">Password</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="home_header">What are you looking for today?</string>
     <string name="cambio">RESTAURANTE XD</string>
     <string name="home_restaurants">Restaurants</string>
@@ -10,4 +13,19 @@
     <string name="home_other_places">Other places</string>
     <string name="home_common_places">Common places</string>
     <string name="recomendaciones">Recommended places</string>
+    <string name="signUpText">It\'s your first time here?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="SignInText">Do you already have an account?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="header_text">From anywhere to anywhere</string>
+    <string name="home_no_common_places">Start to get in queues to see your common places :)</string>
+    <string name="thank_you_for_being_patient">Thank you for being patient</string>
+    <string name="your_current_position_is">Your turn number is</string>
+    <string name="the_approximated_waiting_time_is">The approximated waiting time is:</string>
+    <string name="i_don_t_need_it_anymore">I don´t need it anymore</string>
+    <string name="the_queue_is_currently_on_turn">The queue is currently on turn</string>
+    <string name="it_is_your_turn">It is your turn</string>
+    <string name="go_to_the_place_and_take_your_order">Go to the place and take your order :)</string>
+    <string name="understood">Understood</string>
+    <string name="notification_fcm">notification_fcm</string>
 </resources>

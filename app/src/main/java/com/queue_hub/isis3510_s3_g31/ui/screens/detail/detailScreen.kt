@@ -1,9 +1,11 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
+import android.app.Activity
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
+import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,24 +31,32 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Home
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.Home
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
+import kotlinx.coroutines.launch
 
 
 @Composable
@@ -73,7 +83,7 @@ fun Detail (modifier: Modifier, navController: NavController, detailViewModel: D
         Spacer(modifier = Modifier.padding(8.dp))
         HomeOptions(modifier = Modifier, detailViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
-        Buttons(modifier, navController)
+        Buttons(modifier, navController, detailViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
 
     }
@@ -82,19 +92,35 @@ fun Detail (modifier: Modifier, navController: NavController, detailViewModel: D
 
 
 @Composable
-fun Buttons(modifier: Modifier, navController: NavController) {
+fun Buttons(modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel) {
+    val scope = rememberCoroutineScope()
+    val queuedState by detailViewModel.queued_state.observeAsState(initial = false)
+
     Column(
         modifier = modifier
-            .fillMaxWidth() // Asegura que la columna ocupe todo el ancho
+            .fillMaxWidth()
     ) {
         Button(
             onClick = {
+                scope.launch {
+                if(!queuedState){
+                    detailViewModel.addTurn()
+                    navController.navigate(Wait){
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                }else{
 
-            },
+                    navController.navigate(Home);
+
+                }
+
+            }},
             modifier = Modifier.fillMaxWidth() ,
             colors = ButtonDefaults.buttonColors(
-                containerColor = DarkGreen, // Color de fondo del botón
-                contentColor = Color.White // Color del texto
+                containerColor = DarkGreen,
+                contentColor = Color.White
             )
         ) {
             Text(text = "Give me a turn.")
@@ -106,8 +132,8 @@ fun Buttons(modifier: Modifier, navController: NavController) {
             },
             modifier = Modifier.fillMaxWidth() ,
             colors = ButtonDefaults.buttonColors(
-                containerColor = LightGreen, // Color de fondo del botón
-                contentColor = Color.White // Color del texto
+                containerColor = LightGreen,
+                contentColor = Color.White
             )
         ) {
             Text(text = "See some reviews")
@@ -117,14 +143,17 @@ fun Buttons(modifier: Modifier, navController: NavController) {
 @Composable
 fun HeaderImage(modifier: Modifier, navController: NavController) {
     val logoImage = painterResource(R.drawable.queuehub_logo)
+    val activity = LocalContext.current as? Activity
+    val onBackPressedDispatcher = LocalOnBackPressedDispatcherOwner.current?.onBackPressedDispatcher
+
     Row(
         modifier = modifier
             .padding(top = 30.dp)
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically, // Alinear verticalmente al centro
-        horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre los elementos
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        IconButton(onClick = { navController.navigate("home") }) { // Asegúrate de que "home" sea el nombre correcto de tu ruta
+        IconButton(onClick = { onBackPressedDispatcher?.onBackPressed() }) {
             Icon(
                 imageVector = Icons.Filled.ArrowBack,
                 contentDescription = "Back",
@@ -154,7 +183,8 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
         Row (
 
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .fillMaxHeight(0.75f)
 
         ){
@@ -163,7 +193,8 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 
                 image = painterResource(id = R.drawable.img_1),
                 modifier = Modifier.weight(1f),
-                detailViewModel
+                detailViewModel,
+                detailViewModel.userId
 
             )
 
@@ -182,7 +213,8 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 fun ClickableVerticalOption(
     image: Painter,
     modifier: Modifier,
-    detailViewModel: DetailViewModel
+    detailViewModel: DetailViewModel,
+    userId: String?
 ) {
     Card(
         modifier = modifier
@@ -195,12 +227,18 @@ fun ClickableVerticalOption(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier
 
-                .fillMaxWidth().padding(top = 20.dp)
+                .fillMaxWidth()
+                .padding(top = 20.dp)
 
         ) {
             Text(
-                text = detailViewModel.state.place.nombre,
+                text = detailViewModel.state.place.name,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = detailViewModel.state.place.address,
+                style = MaterialTheme.typography.titleLarge.copy(),
                 textAlign = TextAlign.Center
             )
             Image(
@@ -217,26 +255,29 @@ fun ClickableVerticalOption(
         Column(
 
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.size(300.dp)
-                .fillMaxWidth().padding(horizontal = 20.dp)
+            modifier = modifier
+                .size(300.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
+
 
 
         ) {
             Text(
                 text = "Average Waiting Time: ${detailViewModel.state.place.averageWaitingTime} min",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), // Poner en negrita
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Best arrival time: ${detailViewModel.state.place.bestAverageFrame}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), // Poner en negrita
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
-                text = "People on Queue: ${43}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold), // Poner en negrita
+                text = "People on Queue: ${detailViewModel.state.onQueue}",
+                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
