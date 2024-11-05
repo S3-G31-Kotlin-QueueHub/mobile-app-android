@@ -33,7 +33,6 @@ class UserPreferencesRepository(private val context: Context, private val db: Fi
         }
     }
 
-
     val isLoggedIn: Flow<Boolean> = context.dataStore.data
         .map { preferences ->
             preferences[IS_LOGGED_IN_KEY] ?: false
@@ -55,6 +54,15 @@ class UserPreferencesRepository(private val context: Context, private val db: Fi
         context.dataStore.edit { preferences ->
             preferences.clear()
         }
+    }
+
+    suspend fun saveUserToken(token: String, idUser: String) {
+        db.collection("users")
+            .document(idUser)
+            .update("token", token)
+            .addOnSuccessListener {
+                println("Token saved successfully")
+            }
     }
     suspend fun getUserData( ) {
         try {

@@ -22,6 +22,36 @@ class TurnsRepository(
     private val turnsDao: TurnDao
 ) {
 
+    suspend fun cancelTurn(idUser: String): Boolean {
+        return suspendCancellableCoroutine { continuation ->
+            db.collection("turns")
+                .whereEqualTo("idUser", idUser)
+                .whereEqualTo("status", "waiting")
+                .limit(1)
+                .get()
+                .addOnSuccessListener { querySnapshot ->
+                    if (querySnapshot.isEmpty) {
+                        continuation.resume(false)
+                        return@addOnSuccessListener
+                    }
+                    val turnDocument = querySnapshot.documents[0]
+                    db.collection("turns")
+                        .document(turnDocument.id)
+                        .update(
+                            mapOf(
+                                "status" to "cancelled",
+                                "cancelledAt" to FieldValue.serverTimestamp()
+                            )
+                        )
+                }
+                .addOnFailureListener { e ->
+                    continuation.resume(false)
+                }
+
+
+
+        }
+    }
 
     suspend fun getTurn(idUser: String): Flow<Turn> = callbackFlow {
         val turnRef = db.collection("turns").whereEqualTo("idUser", idUser).whereIn("status", listOf("waiting", "active")).limit(1)

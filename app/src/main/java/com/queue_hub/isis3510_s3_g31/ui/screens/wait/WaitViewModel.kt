@@ -24,10 +24,12 @@ class WaitViewModel(
         getTurn()
     }
 
-    private fun cancelTurn(){
-
+    fun cancelTurn(){
+        viewModelScope.launch (Dispatchers.IO){
+            val idUser = userPreferencesRepository.userId.first()
+            turnsRepository.cancelTurn(idUser)
+        }
     }
-
 
     private fun getTurn(){
         viewModelScope.launch (Dispatchers.IO){

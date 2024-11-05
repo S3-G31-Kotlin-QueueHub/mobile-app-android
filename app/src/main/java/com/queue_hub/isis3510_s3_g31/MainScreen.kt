@@ -48,10 +48,11 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository,
             label = "Home",
             icon = Icons.Default.Home
         ),
+        /*
         BottomNavItem(
             label = "Queues",
             icon = Icons.Default.Face
-        ),
+        ),*/
         BottomNavItem(
             label = "Recommended",
             icon = Icons.Default.Favorite
