@@ -31,22 +31,28 @@ class DetailViewModel (private val placesRepository: PlacesRepository, private v
         viewModelScope.launch {
             userId = userPreferencesRepository.userId.first()
             state = state.copy(
-                place = getPlace(),
+                place = getPlace(), onQueue = getPeopleOnQueue()
             )
-        }
+            getActiveTurn()
+        };
+
+    }
+    suspend fun getActiveTurn() {
+        _queued_state.value = false
+
     }
 
-
      suspend fun getPlace() : Place{
+
             return placesRepository.getPlace()
+    }
+    suspend fun getPeopleOnQueue() : Int{
+
+        return turnsRepository.getTurnsLength(state.place.id)
     }
 
     suspend fun addTurn(){
         _queued_state.value = turnsRepository.addTurn(userId.orEmpty(), state.place.id)
     }
-
-
-
-
 }
 
