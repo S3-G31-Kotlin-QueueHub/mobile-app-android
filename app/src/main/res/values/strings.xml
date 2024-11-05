@@ -27,4 +27,5 @@
     <string name="it_is_your_turn">It is your turn</string>
     <string name="go_to_the_place_and_take_your_order">Go to the place and take your order :)</string>
     <string name="understood">Understood</string>
+    <string name="notification_fcm">notification_fcm</string>
 </resources>
