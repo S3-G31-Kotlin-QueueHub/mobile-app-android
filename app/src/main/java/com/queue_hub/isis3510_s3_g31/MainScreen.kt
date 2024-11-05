@@ -135,7 +135,7 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
             placesRepository = placesRepository
         )
         1 -> WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))
-        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
-        3 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
+        3 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
+        2 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
     }
 }
