@@ -7,6 +7,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,16 +15,22 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -33,12 +40,23 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
+import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
+import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Home
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Login
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.CommonPlaceCard
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewState
 import kotlinx.coroutines.launch
 
 
@@ -63,15 +81,19 @@ fun Profile (modifier: Modifier, navController: NavController, profileViewModel:
         HeaderImage(modifier = Modifier, navController =navController, profileViewModel)
         Spacer(modifier = Modifier.padding(12.dp))
         HomeOptions(modifier = Modifier, profileViewModel)
+        stats(modifier = Modifier, navController = navController, profileViewModel = profileViewModel)
 
 
     }
 
 }
 
-
-
 @Composable
+fun stats(modifier: Modifier, navController: NavController, profileViewModel: ProfileViewModel) {
+
+}
+
+    @Composable
 fun HeaderImage(modifier: Modifier, navController: NavController, profileViewModel: ProfileViewModel) {
     val logoImage = painterResource(R.drawable.queuehub_logo)
     val activity = LocalContext.current as? Activity
@@ -161,8 +183,7 @@ fun ClickableVerticalOption(
     Card(
         modifier = modifier
             .padding(3.dp)
-            .fillMaxWidth()
-            ,
+            .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
 
         ) {
@@ -190,14 +211,20 @@ fun ClickableVerticalOption(
             };
             ;
             Text(
-                text = profileViewModel.state.turns.size.toString(),
+                text = profileViewModel.state.name,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )
             Text(
 
-                text = profileViewModel.turns.size.toString(),
+                text = profileViewModel.state.email,
                 style = MaterialTheme.typography.titleLarge.copy(),
+                textAlign = TextAlign.Center
+            )
+
+            Text(
+                text = "Numero de filas hechas: " + profileViewModel.state.turns.size.toString(),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )
 
@@ -205,7 +232,10 @@ fun ClickableVerticalOption(
         }
 
     }
-}
+
+    }
+
+
 
 
 

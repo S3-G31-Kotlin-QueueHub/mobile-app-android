@@ -57,8 +57,8 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository,
             icon = Icons.Default.Favorite
         ),
         BottomNavItem(
-            label = "Explore",
-            icon = Icons.Default.Info
+            label = "Profile",
+            icon = Icons.Default.Face
         ),
     )
 
