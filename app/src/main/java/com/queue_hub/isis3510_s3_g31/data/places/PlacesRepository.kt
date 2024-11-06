@@ -62,7 +62,8 @@ class PlacesRepository (
                             city = it["city"] as String,
                             localization = it["localization"] as com.google.firebase.firestore.GeoPoint,
                             type = it["type"] as String,
-                            visitCount = it["visitCount"] as Long
+                            visitCount = it["visitCount"] as Long,
+                            bestArrivalTime = it["bestAverageFrame"] as String
                         ).toDomain()
                     } ?: emptyList()
                     trySend(commonPlaces)

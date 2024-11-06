@@ -13,5 +13,6 @@ data class CommonPlaceFirestore(
     val city: String,
     val localization: GeoPoint,
     val type: String,
-    val visitCount: Long
+    val visitCount: Long,
+    val bestArrivalTime :String
 )

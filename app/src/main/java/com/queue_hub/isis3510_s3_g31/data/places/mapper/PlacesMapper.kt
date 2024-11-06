@@ -68,7 +68,8 @@ fun CommonPlaceFirestore.toDomain() : CommonPlace {
         phone = this.phone,
         image = this.image,
         lastVisit = this.lastVisit.toString(),
-        city = this.city
+        city = this.city,
+        bestArrivalTime = this.bestArrivalTime
     )
 }
 
@@ -83,6 +84,6 @@ fun CommonPlace.toPlace() : Place {
         averageWaitingTime = 0,
         averageWaitingTimeLastHour = 0,
         averageScoreReview = 0f,
-        bestAverageFrame = ""
+        bestAverageFrame = this.bestArrivalTime
     )
 }

@@ -7,5 +7,6 @@ data class CommonPlace(
     val phone: String,
     val image: String,
     val lastVisit: String,
-    val city: String
+    val city: String,
+    val bestArrivalTime: String
 )
