@@ -1,10 +1,12 @@
 package com.queue_hub.isis3510_s3_g31
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.Manifest
+import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,7 +14,9 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.room.Room
@@ -27,7 +31,6 @@ import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnDao
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
@@ -70,9 +73,8 @@ class MainActivity : ComponentActivity() {
         val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
         val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
         queuesRepository = QueuesRepository(db)
-
         viewModel.checkAuthState(userPreferencesRepository)
-        askNotificationPermission()
+        askNotificationPermission();
 
 
         setContent {
@@ -87,7 +89,9 @@ class MainActivity : ComponentActivity() {
                     db = db,
                     userPreferencesRepository = userPreferencesRepository,
                     turnsRepository = repositoryTurns,
-                    queuesRepository = queuesRepository
+                    queuesRepository = queuesRepository,
+                    context = LocalContext.current,
+                    mainViewModel = viewModel
                 )
             }
         }

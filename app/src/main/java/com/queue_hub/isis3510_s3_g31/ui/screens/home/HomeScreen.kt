@@ -44,13 +44,15 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
+import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 
 @Composable
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier,
     homeViewModel: HomeViewModel,
-    placesRepository: PlacesRepository
+    placesRepository: PlacesRepository,
+    location: LocationData?
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
@@ -59,7 +61,7 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository)
+        Home(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository, location = location)
     }
 }
 
@@ -68,7 +70,8 @@ fun Home (
     modifier: Modifier,
     state: HomeViewState,
     navController: NavController,
-    placesRepository: PlacesRepository
+    placesRepository: PlacesRepository,
+    location: LocationData?
 ){
     Column(
         verticalArrangement = Arrangement.Center,
@@ -89,7 +92,7 @@ fun Home (
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        CommonPlacesList(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository)
+        CommonPlacesList(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository, location = location)
     }
 
 }
@@ -226,7 +229,8 @@ fun CommonPlacesList(
     modifier: Modifier,
     state: HomeViewState,
     navController: NavController,
-    placesRepository: PlacesRepository
+    placesRepository: PlacesRepository,
+    location: LocationData?
 ){
     when (state) {
         is HomeViewState.Loading -> {
@@ -234,10 +238,19 @@ fun CommonPlacesList(
         }
         is HomeViewState.Success -> {
             if(state.commonPlaces.isEmpty()){
-                Text(
-                    text = stringResource(R.string.home_no_common_places),
-                    textAlign = TextAlign.Center,
-                )
+                if(location != null){
+                    Text(
+                        text = "Latitude ${location.latitude}, Longitude ${location.longitude}",
+                        textAlign = TextAlign.Center,
+                    )
+                }else{
+                    Text(
+                        text = stringResource(R.string.home_no_common_places),
+                        textAlign = TextAlign.Center,
+                    )
+                }
+
+
             }else{
                 LazyColumn(
                     modifier = modifier,
