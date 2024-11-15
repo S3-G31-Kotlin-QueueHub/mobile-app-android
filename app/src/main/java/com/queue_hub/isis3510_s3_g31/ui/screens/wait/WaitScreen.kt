@@ -142,7 +142,7 @@ fun WaitCard(
 
 
 @Composable
-fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn, queue: Queue, waitViewModel: WaitViewModel = androidx.lifecycle.viewmodel.compose.viewModel()){
+fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn, queue: Queue, waitViewModel: WaitViewModel){
     Card(
         modifier = modifier
             .padding(8.dp)

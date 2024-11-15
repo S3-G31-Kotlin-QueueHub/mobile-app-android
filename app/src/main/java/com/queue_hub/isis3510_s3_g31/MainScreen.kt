@@ -7,6 +7,7 @@ import androidx.compose.material.icons.filled.Face
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBar
@@ -20,6 +21,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -36,6 +38,8 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.userQueues.UserQueuesScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.userQueues.UserQueuesViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
@@ -48,11 +52,10 @@ fun MainScreen(navController: NavController, placesRepository: PlacesRepository,
             label = "Home",
             icon = Icons.Default.Home
         ),
-        /*
         BottomNavItem(
             label = "Queues",
-            icon = Icons.Default.Face
-        ),*/
+            icon = Icons.Default.Place
+        ),
         BottomNavItem(
             label = "Recommended",
             icon = Icons.Default.Favorite
@@ -134,8 +137,8 @@ fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navControll
             ),
             placesRepository = placesRepository
         )
-        /*1 -> WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))*/
-        1 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
-        2 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
+        1 -> UserQueuesScreen(navController = navController, userQueuesViewModel = UserQueuesViewModel(queuesRepository = queuesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository = turnsRepository))
+        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
+        3 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
     }
 }
