@@ -55,6 +55,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.play.services.location)
     implementation(libs.firebase.messaging.ktx)
     implementation(libs.glide.compose)
     implementation(libs.androidx.core.splashscreen)
