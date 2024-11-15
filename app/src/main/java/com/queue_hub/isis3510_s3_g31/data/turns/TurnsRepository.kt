@@ -67,6 +67,14 @@ class TurnsRepository(
                 try {
 
                     if (snapshot.isEmpty) {
+                        trySend(Turn(
+                            idUser = "",
+                            idPlace = "",
+                            createdAt = Timestamp.now(),
+                            way = "",
+                            status = "",
+                            turnNumber = 99999999
+                        ))
                         return@addSnapshotListener
                     }
 
