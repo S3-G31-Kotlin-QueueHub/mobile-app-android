@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,9 +17,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
@@ -31,7 +36,9 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -130,14 +137,14 @@ fun HomeOptions(modifier: Modifier) {
             ClickableVerticalOption(
                 image = painterResource(id = R.drawable.comida__1_),
                 text = stringResource(id = R.string.home_restaurants),
-                onClick = { /* Handle click event */ },
+                onClick = {  },
                 modifier = Modifier.weight(1f)
 
             )
             ClickableVerticalOption(
                 image = painterResource(id = R.drawable.comercio),
                 text = stringResource(id = R.string.home_stores),
-                onClick = { /* Handle click event */ },
+                onClick = {  },
                 modifier = Modifier.weight(1f)
 
             )
@@ -146,7 +153,7 @@ fun HomeOptions(modifier: Modifier) {
         ClickableHorizontalOption(
             image = painterResource(id = R.drawable.caja_de_herramientas),
             text = stringResource(id = R.string.home_other_places),
-            onClick = { /* Handle click event */ },
+            onClick = { },
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -249,8 +256,6 @@ fun CommonPlacesList(
                         textAlign = TextAlign.Center,
                     )
                 }
-
-
             }else{
                 LazyColumn(
                     modifier = modifier,
@@ -281,49 +286,72 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable(onClick = onClick)
-            .height(100.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+            .height(120.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.onPrimary)
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxSize(),
             horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
 
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = place.name,
-                    style = MaterialTheme.typography.titleMedium
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = colorScheme.onSurface
                 )
-                Text(
-                    text = place.address,
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                Text(
-                    text = place.city,
-                    style = MaterialTheme.typography.bodyMedium
-                )
+
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.LocationOn,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp),
+                        tint = colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "${place.address}, ${place.city}",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
-
-            GlideImage(
-                model = place.image,
-                contentDescription = null,
-                modifier = Modifier
-                    .width(120.dp),
-                contentScale = ContentScale.FillHeight
-            ) { requestBuilder ->
-                requestBuilder
-                    .centerCrop()
-                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    .placeholder(R.drawable.comida__1_)
-                    .error(R.drawable.comida__1_)
-                    .transition(DrawableTransitionOptions.withCrossFade())
+            Card(
+                modifier = Modifier.size(120.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                GlideImage(
+                    model = place.image,
+                    contentDescription = "Queue Image",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.FillHeight,
+                ) { requestBuilder ->
+                    requestBuilder
+                        .centerCrop()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        .placeholder(R.drawable.comida__1_)
+                        .error(R.drawable.comida__1_)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                }
             }
         }
     }

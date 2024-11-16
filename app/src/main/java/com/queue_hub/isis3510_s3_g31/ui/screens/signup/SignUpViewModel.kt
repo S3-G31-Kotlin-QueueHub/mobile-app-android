@@ -12,6 +12,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.model.User
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
@@ -45,8 +46,8 @@ class SignUpViewModel(
     private val _signUpState = MutableLiveData<SignUpState>()
     val signUpState: LiveData<SignUpState> = _signUpState
 
-    fun signUp(auth: FirebaseAuth, db: FirebaseFirestore) {
-        viewModelScope.launch {
+    fun signUp() {
+        viewModelScope.launch (Dispatchers.IO){
             _signUpState.value = SignUpState.Loading
             try {
 
@@ -63,54 +64,24 @@ class SignUpViewModel(
                         return@launch
                     }
 
-                    auth.createUserWithEmailAndPassword(emailValue, passwordValue)
-                        .addOnCompleteListener { task ->
-                            if (task.isSuccessful) {
-                                val userId = auth.currentUser?.uid
+                    userPreferencesRepository.signUp(emailValue, passwordValue, _phone.value.orEmpty(), _name.value.orEmpty())
 
-                                val user = User(
-                                    name = name.value.orEmpty(),
-                                    email = email.value.orEmpty(),
-                                    phone = phone.value.orEmpty(),
-                                    isAdmin = false,
-                                    createdAt = Timestamp.now()
-                                )
+                    _signUpState.value = SignUpState.Success
 
-                                userId?.let { uid ->
-                                    db.collection("users")
-                                        .document(uid)
-                                        .set(user)
-                                        .addOnSuccessListener {
-
-                                            viewModelScope.launch {
-                                                userPreferencesRepository.saveUserData(
-                                                    email.value.orEmpty(),
-                                                    uid
-                                                )
-                                            }
-
-                                            _signUpState.value = SignUpState.Success
-                                        }
-                                        .addOnFailureListener { e ->
-                                            _signUpState.value =
-                                                SignUpState.Error("Error saving user data: ${e.message}")
-                                        }
-                                }
-
-                            } else {
-                                _signUpState.value = SignUpState.Error("This email has already register, please sign in or try with a different email.")
-                                Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                            }
-                        }
                 }else{
                     _signUpState.value = SignUpState.Error("A valid email and a password larger than 6 digits is needed")
                 }
             } catch (e: Exception) {
-                _signUpState.value = SignUpState.Error("Sign Up error: ${e.message}")
+                val errorMessage = when {
+                    e.message?.contains("email", ignoreCase = true) == true ->
+                        "This email has already register, please sign in or try with a different email."
+                    else -> "Error during sign up: ${e.message}"
+                }
+                _signUpState.value = SignUpState.Error(errorMessage)
+                Log.e(TAG, "Error en signUp", e)
             }
         }
     }
-
 
 
 

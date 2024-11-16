@@ -1,22 +1,34 @@
 package com.queue_hub.isis3510_s3_g31.data.users
 
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.queue_hub.isis3510_s3_g31.data.users.model.User
+import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.tasks.await
+import kotlin.coroutines.resumeWithException
 
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
 
-class UserPreferencesRepository(private val context: Context, private val db: FirebaseFirestore) {
+class UserPreferencesRepository(private val context: Context, private val db: FirebaseFirestore, private val auth: FirebaseAuth) {
     companion object {
         private val EMAIL_KEY = stringPreferencesKey("email")
         private val USER_ID_KEY = stringPreferencesKey("user_id")
@@ -83,4 +95,42 @@ class UserPreferencesRepository(private val context: Context, private val db: Fi
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
+    suspend fun signUp(email: String, password: String, phone: String, name: String) {
+
+        // Convert Firebase Auth to coroutine-based call
+        val authResult = suspendCancellableCoroutine { continuation ->
+            auth.createUserWithEmailAndPassword(email, password)
+                .addOnSuccessListener { result ->
+                    continuation.resume(result, null)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
+
+        val userId = authResult.user?.uid ?: throw Exception("Failed to get user ID")
+
+        val user = User(
+            name = name,
+            email = email,
+            phone = phone,
+            isAdmin = false,
+            createdAt = Timestamp.now()
+        )
+
+        suspendCancellableCoroutine<Void> { continuation ->
+            db.collection("users")
+                .document(userId)
+                .set(user)
+                .addOnSuccessListener { result ->
+                    continuation.resume(result, null)
+                }
+                .addOnFailureListener { exception ->
+                    continuation.resumeWithException(exception)
+                }
+        }
+
+        saveUserData(email, userId)
+    }
 }
