@@ -10,6 +10,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.MainScreen
 import com.queue_hub.isis3510_s3_g31.MainViewModel
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
@@ -43,7 +44,8 @@ fun AppNavigation(
     startDestination: Any,
     queuesRepository: QueuesRepository,
     context : Context,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    dataLayerFacade: DataLayerFacade
 ) {
 
     val navController = rememberNavController()
@@ -56,13 +58,13 @@ fun AppNavigation(
            LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository, userPreferencesRepository = userPreferencesRepository) , navController = navController, auth = auth )
         }
         composable<Main> {
-            MainScreen(navController = navController, placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel )
+            MainScreen(navController = navController, placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel, dataLayerFacade = dataLayerFacade )
         }
         composable<Home> {
             HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( placesRepository, userPreferencesRepository ), placesRepository = placesRepository, location = null)
         }
         composable<Recommended>{
-            RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( placesRepository ), repository = placesRepository)
+            RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( dataLayerFacade ))
         }
         composable<Detail>{
 
