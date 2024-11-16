@@ -34,7 +34,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
@@ -62,8 +61,7 @@ fun MainScreen(navController: NavController,
                queuesRepository: QueuesRepository,
                locationProvider: LocationProvider,
                context: Context,
-               mainViewModel: MainViewModel,
-               dataLayerFacade: DataLayerFacade) {
+               mainViewModel: MainViewModel) {
 
     val navItemList = listOf(
         BottomNavItem(
@@ -176,8 +174,7 @@ fun MainScreen(navController: NavController,
             userPreferencesRepository = userPreferencesRepository,
             turnsRepository = turnsRepository,
             queuesRepository = queuesRepository,
-            location = location,
-            dataLayerFacade = dataLayerFacade
+            location = location
             )
 
         }
@@ -185,15 +182,7 @@ fun MainScreen(navController: NavController,
 }
 
 @Composable
-fun ContentScreen(modifier: Modifier = Modifier,
-                  selectedIndex: Int,
-                  navController: NavController,
-                  placesRepository: PlacesRepository,
-                  userPreferencesRepository: UserPreferencesRepository,
-                  turnsRepository: TurnsRepository,
-                  queuesRepository: QueuesRepository,
-                  location: LocationData?,
-                  dataLayerFacade: DataLayerFacade){
+fun ContentScreen(modifier: Modifier = Modifier, selectedIndex: Int, navController: NavController, placesRepository: PlacesRepository, userPreferencesRepository: UserPreferencesRepository, turnsRepository: TurnsRepository, queuesRepository: QueuesRepository, location: LocationData?){
 
     when(selectedIndex){
 
@@ -208,7 +197,7 @@ fun ContentScreen(modifier: Modifier = Modifier,
             location = location
         )
         1 -> UserQueuesScreen(navController = navController, userQueuesViewModel = UserQueuesViewModel(queuesRepository = queuesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository = turnsRepository))
-        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(dataLayerFacade = dataLayerFacade))
+        2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(placesRepository = placesRepository), repository = placesRepository)
         3 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
     }
 }
