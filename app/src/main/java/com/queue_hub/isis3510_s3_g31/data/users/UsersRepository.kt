@@ -92,7 +92,6 @@ class UsersRepository(private val context: Context, private val db: FirebaseFire
     @OptIn(ExperimentalCoroutinesApi::class)
     suspend fun signUp(email: String, password: String, phone: String, name: String) {
 
-        // Convert Firebase Auth to coroutine-based call
         val authResult = suspendCancellableCoroutine { continuation ->
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnSuccessListener { result ->
@@ -148,7 +147,6 @@ class UsersRepository(private val context: Context, private val db: FirebaseFire
         }
 
         val userId = authResult.user?.uid ?: throw Exception("Failed to get user ID")
-        println("EMAIL $email USERID $userId")
         saveUserData(email, userId)
 
     }
