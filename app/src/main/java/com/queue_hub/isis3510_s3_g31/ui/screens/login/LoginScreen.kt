@@ -71,7 +71,7 @@ fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: F
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
-            Login(Modifier.align(Alignment.Center), viewModel, navController, loginState, auth)
+            Login(Modifier.align(Alignment.Center), viewModel, navController, loginState)
         }
     }
 }
@@ -81,8 +81,7 @@ fun Login(
     modifier: Modifier,
     viewModel: LoginViewModel,
     navController: NavController,
-    loginState: LoginState,
-    auth: FirebaseAuth
+    loginState: LoginState
 ) {
 
     val email: String by viewModel.email.observeAsState(initial = "")
@@ -146,7 +145,7 @@ fun Login(
                 Spacer(modifier = Modifier.height(8.dp))
                 PasswordField(password) { viewModel.onLoginChange(email, it) }
                 Spacer(modifier = Modifier.height(24.dp))
-                LoginButton(navController, viewModel, auth)
+                LoginButton(viewModel)
             }
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -160,10 +159,10 @@ fun Login(
 }
 
 @Composable
-fun LoginButton(navController: NavController, viewModel: LoginViewModel, auth: FirebaseAuth) {
+fun LoginButton(viewModel: LoginViewModel) {
     Button(
         onClick = {
-            viewModel.authenticateUsers(auth)
+            viewModel.authenticateUsers()
         },
         modifier = Modifier.fillMaxWidth()
     ){

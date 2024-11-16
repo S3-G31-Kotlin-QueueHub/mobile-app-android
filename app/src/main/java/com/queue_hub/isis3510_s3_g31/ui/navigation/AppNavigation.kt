@@ -14,7 +14,6 @@ import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.detail.DetailViewModel
@@ -39,7 +38,7 @@ fun AppNavigation(
     userRepository: UsersRepository,
     auth: FirebaseAuth,
     db: FirebaseFirestore,
-    userPreferencesRepository: UserPreferencesRepository,
+    usersRepository: UsersRepository,
     turnsRepository: TurnsRepository,
     startDestination: Any,
     queuesRepository: QueuesRepository,
@@ -55,29 +54,29 @@ fun AppNavigation(
         startDestination= startDestination
     ){
         composable<Login> {
-           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository, userPreferencesRepository = userPreferencesRepository) , navController = navController, auth = auth )
+           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController, auth = auth )
         }
         composable<Main> {
-            MainScreen(navController = navController, placesRepository = placesRepository, userPreferencesRepository = userPreferencesRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel, dataLayerFacade = dataLayerFacade )
+            MainScreen(navController = navController, placesRepository = placesRepository, usersRepository = usersRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel, dataLayerFacade = dataLayerFacade )
         }
         composable<Home> {
-            HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( placesRepository, userPreferencesRepository ), placesRepository = placesRepository, location = null)
+            HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( dataLayerFacade ), location = null)
         }
         composable<Recommended>{
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( dataLayerFacade ))
         }
         composable<Detail>{
 
-            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = placesRepository, userPreferencesRepository=userPreferencesRepository, turnsRepository = turnsRepository))
+            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository))
         }
         composable<SignUp> {
-            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, userPreferencesRepository = userPreferencesRepository), auth = auth, db = db)
+            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, usersRepository = usersRepository), auth = auth, db = db)
         }
         composable<Wait> {
-            WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, userPreferencesRepository = userPreferencesRepository, queuesRepository = queuesRepository))
+            WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, usersRepository = usersRepository, queuesRepository = queuesRepository))
         }
         composable<Profile> {
-            ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, userPreferencesRepository=userPreferencesRepository, turnsRepository = turnsRepository))
+            ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository))
         }
 
     }

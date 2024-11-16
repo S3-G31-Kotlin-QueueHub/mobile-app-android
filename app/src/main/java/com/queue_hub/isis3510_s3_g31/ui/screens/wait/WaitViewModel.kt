@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class WaitViewModel(
     private val turnsRepository: TurnsRepository,
-    private val userPreferencesRepository: UserPreferencesRepository,
+    private val usersRepository: UsersRepository,
     private val queuesRepository: QueuesRepository
 ): ViewModel() {
 
@@ -26,14 +26,14 @@ class WaitViewModel(
 
     fun cancelTurn(){
         viewModelScope.launch (Dispatchers.IO){
-            val idUser = userPreferencesRepository.userId.first()
+            val idUser = usersRepository.userId.first()
             turnsRepository.cancelTurn(idUser)
         }
     }
 
     private fun getTurn(){
         viewModelScope.launch (Dispatchers.IO){
-            val idUser = userPreferencesRepository.userId.first()
+            val idUser = usersRepository.userId.first()
 
             turnsRepository.getTurn(idUser).collect{ turn ->
                 val idPlace = turn.idPlace

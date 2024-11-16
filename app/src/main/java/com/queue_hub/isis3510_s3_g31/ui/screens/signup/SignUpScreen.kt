@@ -169,7 +169,7 @@ fun LoginButton(navController: NavController) {
 fun SignUpButton(viewModel: SignUpViewModel, auth: FirebaseAuth, db: FirebaseFirestore){
     Button(
         onClick = {
-            viewModel.signUp(auth, db)
+            viewModel.signUp()
         },
         modifier = Modifier.fillMaxWidth()
     ){

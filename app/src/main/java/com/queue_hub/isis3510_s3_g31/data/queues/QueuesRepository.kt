@@ -9,7 +9,10 @@ import com.queue_hub.isis3510_s3_g31.data.queues.model.PreviousQueue
 import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
@@ -56,42 +59,66 @@ class QueuesRepository(
 
 
     suspend fun getPreviousUserQueues(idUser: String): Flow<List<PreviousQueue>> = callbackFlow {
-         val commonPlacesRef = db.collection("commonPlaces").document(idUser)
+        val commonPlacesRef = db.collection("commonPlaces").document(idUser)
 
-         val commonPlacesSubscription = commonPlacesRef.addSnapshotListener { snapshot, error ->
-             if (error != null) {
-                 return@addSnapshotListener
-             }
+        val commonPlacesSubscription = commonPlacesRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                return@addSnapshotListener
+            }
 
-             if (snapshot != null ) {
-                 try {
+            if (snapshot != null) {
+                launch {
+                    try {
+                        if (!snapshot.exists()) {
+                            trySend(emptyList())
+                            return@launch
+                        }
 
-                     if (!snapshot.exists()) {
-                         trySend(emptyList())
-                         return@addSnapshotListener
-                     }
+                        val commonPlacesData = snapshot.data?.get("commonPlaces") as? List<Map<String, Any>>
 
-                     val commonPlacesData = snapshot.data?.get("commonPlaces") as? List<Map<String, Any>>
-                     println("commonPlacesData: $commonPlacesData")
-                     val previousQueues = commonPlacesData?.map{
-                         PreviousQueue(
-                             name = it["name"] as? String ?: "",
-                             image = it["image"] as? String ?: "",
-                             lastVisit = it["lastVisit"] as? Timestamp ?: Timestamp.now(),
-                             city = it["city"] as? String ?: "",
-                             address = it["address"] as? String ?: "",
-                         )
-                     } ?: emptyList()
-                     val sortedQueues = previousQueues.sortedByDescending { it.lastVisit }
-                     trySend(sortedQueues)
-                 } catch (e: Exception) {
-                     close(e)
-                 }
-             }
-         }
-         awaitClose {
-             commonPlacesSubscription.remove()
-         }
+                        if (commonPlacesData == null) {
+                            trySend(emptyList())
+                            return@launch
+                        }
+
+                        val previousQueues = coroutineScope {
+                            commonPlacesData.map { commonPlace ->
+                                async {
+                                    val placeId = commonPlace["idPlace"] as? String ?: return@async null
+                                    val lastVisit = commonPlace["lastVisit"] as? Timestamp ?: Timestamp.now()
+
+                                    try {
+                                        val placeDoc = db.collection("places").document(placeId).get().await()
+
+                                        if (placeDoc.exists()) {
+                                            PreviousQueue(
+                                                name = placeDoc.getString("name") ?: "",
+                                                image = placeDoc.getString("image") ?: "",
+                                                lastVisit = lastVisit,
+                                                city = placeDoc.getString("city") ?: "",
+                                                address = placeDoc.getString("address") ?: "",
+                                            )
+                                        } else null
+                                    } catch (e: Exception) {
+                                        println("Error fetching place $placeId: ${e.message}")
+                                        null
+                                    }
+                                }
+                            }.awaitAll().filterNotNull()
+                        }
+
+                        val sortedQueues = previousQueues.sortedByDescending { it.lastVisit }
+                        trySend(sortedQueues)
+                    } catch (e: Exception) {
+                        close(e)
+                    }
+                }
+            }
+        }
+
+        awaitClose {
+            commonPlacesSubscription.remove()
+        }
     }
 
 }

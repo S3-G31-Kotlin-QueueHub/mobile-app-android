@@ -12,7 +12,6 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -31,9 +30,7 @@ import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
-import com.queue_hub.isis3510_s3_g31.data.users.remote.UserApi
 import com.queue_hub.isis3510_s3_g31.ui.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
 
@@ -41,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var userPreferencesRepository: UserPreferencesRepository
+    private lateinit var usersRepository: UsersRepository
     private lateinit var placesRepository: PlacesRepository
     private lateinit var queuesRepository: QueuesRepository
 
@@ -61,24 +58,23 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         auth = Firebase.auth
         db = Firebase.firestore
-        userPreferencesRepository = UserPreferencesRepository(applicationContext, db = db)
+        usersRepository = UsersRepository(applicationContext, db = db, auth = auth)
 
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
         val turnDb = Room.databaseBuilder(this, TurnsDatabase::class.java , name="turns" ).build()
         val turnDAO = turnDb.dao
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
-        val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
         val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
         queuesRepository = QueuesRepository(db)
-        viewModel.checkAuthState(userPreferencesRepository)
+        viewModel.checkAuthState(usersRepository)
         askNotificationPermission();
 
         val dataLayerFacade = DataLayerFacade(
             placesRepository = placesRepository,
             turnsRepository = repositoryTurns,
             queuesRepository = queuesRepository,
-            usersRepository = repositoryUsers)
+            usersRepository = usersRepository)
 
 
         setContent {
@@ -88,10 +84,10 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(
                     startDestination = startDestination,
                     placesRepository = placesRepository,
-                    userRepository = repositoryUsers,
+                    userRepository = usersRepository,
                     auth = auth,
                     db = db,
-                    userPreferencesRepository = userPreferencesRepository,
+                    usersRepository = usersRepository,
                     turnsRepository = repositoryTurns,
                     queuesRepository = queuesRepository,
                     context = this,

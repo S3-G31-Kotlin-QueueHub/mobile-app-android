@@ -5,14 +5,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val usersRepository: UsersRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val usersRepository: UsersRepository
 ): ViewModel() {
 
     private val _email = MutableLiveData<String>()
@@ -27,7 +25,7 @@ class LoginViewModel(
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
 
-    fun authenticateUsers(auth: FirebaseAuth) {
+    fun authenticateUsers() {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             val emailValue = _email.value.orEmpty()
@@ -46,23 +44,12 @@ class LoginViewModel(
                 }
             }else{
                 try {
-                    auth.signInWithEmailAndPassword(emailValue, passwordValue)
-                        .addOnCompleteListener{ task ->
-                            if (task.isSuccessful) {
-                                val user = auth.currentUser
-                                val userId = user?.uid ?: ""
-                                val email = user?.email ?: ""
-                                viewModelScope.launch {
-                                    userPreferencesRepository.saveUserData(email, userId)
-                                }
 
-                                _loginState.value = LoginState.Success
+                    usersRepository.logIn(emailValue, passwordValue)
 
-                            } else {
-                                _loginState.value =
-                                    LoginState.Error("Your sign in credentials are incorrect, please check and try again")
-                            }
-                        }
+
+                } catch (e: FirebaseAuthInvalidCredentialsException) {
+                    _loginState.value = LoginState.Error("Your sign in credentials are incorrect, please check and try again")
                 } catch (e: Exception) {
                     _loginState.value = LoginState.Error("Authentication Error: ${e.message}")
                 }

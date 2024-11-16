@@ -2,15 +2,12 @@ package com.queue_hub.isis3510_s3_g31.ui.screens.userQueues
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
-import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.queues.model.PreviousQueue
 import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.model.Turn
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
-import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitViewState
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -19,7 +16,7 @@ import kotlinx.coroutines.launch
 
 class UserQueuesViewModel(
     private val queuesRepository: QueuesRepository,
-    private val userPreferencesRepository: UserPreferencesRepository,
+    private val usersRepository: UsersRepository,
     private val turnsRepository: TurnsRepository
 ): ViewModel() {
 
@@ -43,7 +40,7 @@ class UserQueuesViewModel(
 
     private fun initializeTurnAndQueue() {
         viewModelScope.launch(Dispatchers.IO) {
-            val idUser = userPreferencesRepository.userId.first()
+            val idUser = usersRepository.userId.first()
 
             turnsRepository.getTurn(idUser).collect { turn ->
                 _turnState.value = UserQueuesViewState.Success(turn)
@@ -60,7 +57,7 @@ class UserQueuesViewModel(
 
     private fun getUserQueues(){
         viewModelScope.launch (Dispatchers.IO){
-            val idUser = userPreferencesRepository.userId.first()
+            val idUser = usersRepository.userId.first()
 
             queuesRepository.getPreviousUserQueues(idUser).collect{ queues ->
                 _queuesState.value = UserQueuesViewState.Success(queues)
@@ -72,7 +69,7 @@ class UserQueuesViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             hideCancelDialog()
-            val idUser = userPreferencesRepository.userId.first()
+            val idUser = usersRepository.userId.first()
             turnsRepository.cancelTurn(idUser)
         }
     }
