@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Login
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Main
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
@@ -35,14 +35,14 @@ class MainViewModel: ViewModel() {
         _location.value = newLocation
     }
 
-    fun checkAuthState(userPreferencesRepository: UserPreferencesRepository) {
+    fun checkAuthState(usersRepository: UsersRepository) {
         viewModelScope.launch {
-            userPreferencesRepository.isLoggedIn.collect { isLoggedIn ->
+            usersRepository.isLoggedIn.collect { isLoggedIn ->
 
 
 
                 if(isLoggedIn){
-                    tokenNew(userPreferencesRepository)
+                    tokenNew(usersRepository)
 
                     _startDestination.value = Main
                 } else{
@@ -54,7 +54,7 @@ class MainViewModel: ViewModel() {
         }
     }
 
-    private fun tokenNew(userPreferencesRepository: UserPreferencesRepository) {
+    private fun tokenNew(usersRepository: UsersRepository) {
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("FCM TOKEN", "Fetching FCM registration token failed", task.exception)
@@ -62,16 +62,16 @@ class MainViewModel: ViewModel() {
             }
             val token = task.result
             viewModelScope.launch {
-                saveUserToken(token, userPreferencesRepository)
+                saveUserToken(token, usersRepository)
             }
             Log.d("FCM TOKEN", token.toString())
         })
     }
 
-    private suspend fun saveUserToken(token: String, userPreferencesRepository: UserPreferencesRepository) {
-        val idUser = userPreferencesRepository.userId.first()
+    private suspend fun saveUserToken(token: String, usersRepository: UsersRepository) {
+        val idUser = usersRepository.userId.first()
         viewModelScope.launch (Dispatchers.IO) {
-            userPreferencesRepository.saveUserToken(token, idUser)
+            usersRepository.saveUserToken(token, idUser)
         }
     }
 }

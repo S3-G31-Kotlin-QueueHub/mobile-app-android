@@ -7,17 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
-import com.queue_hub.isis3510_s3_g31.data.users.model.User
-import kotlinx.coroutines.Dispatchers
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
     private val auth: FirebaseAuth,
-    private val userPreferencesRepository: UserPreferencesRepository): ViewModel() {
+    private val usersRepository: UsersRepository): ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -47,7 +43,7 @@ class SignUpViewModel(
     val signUpState: LiveData<SignUpState> = _signUpState
 
     fun signUp() {
-        viewModelScope.launch (Dispatchers.IO){
+        viewModelScope.launch {
             _signUpState.value = SignUpState.Loading
             try {
 
@@ -64,7 +60,7 @@ class SignUpViewModel(
                         return@launch
                     }
 
-                    userPreferencesRepository.signUp(emailValue, passwordValue, _phone.value.orEmpty(), _name.value.orEmpty())
+                    usersRepository.signUp(emailValue, passwordValue, _phone.value.orEmpty(), _name.value.orEmpty())
 
                     _signUpState.value = SignUpState.Success
 

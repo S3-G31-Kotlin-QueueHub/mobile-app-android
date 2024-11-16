@@ -14,12 +14,12 @@ import androidx.lifecycle.viewModelScope
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
-class DetailViewModel (private val placesRepository: PlacesRepository, private val userPreferencesRepository: UserPreferencesRepository, private val turnsRepository: TurnsRepository): ViewModel() {
+class DetailViewModel (private val placesRepository: PlacesRepository, private val usersRepository: UsersRepository, private val turnsRepository: TurnsRepository): ViewModel() {
 
     var state by mutableStateOf(DetailViewState())
         private set
@@ -29,7 +29,7 @@ class DetailViewModel (private val placesRepository: PlacesRepository, private v
 
     init {
         viewModelScope.launch {
-            userId = userPreferencesRepository.userId.first()
+            userId = usersRepository.userId.first()
             state = state.copy(
                 place = getPlace(), onQueue = getPeopleOnQueue()
             )

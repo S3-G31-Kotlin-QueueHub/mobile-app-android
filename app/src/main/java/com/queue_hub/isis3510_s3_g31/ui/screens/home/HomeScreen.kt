@@ -47,7 +47,6 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
-import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
@@ -58,7 +57,6 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier,
     homeViewModel: HomeViewModel,
-    placesRepository: PlacesRepository,
     location: LocationData?
 ) {
     val state by homeViewModel.uiState.collectAsState()
@@ -68,7 +66,7 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository, location = location)
+        Home(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel, location = location)
     }
 }
 
@@ -77,8 +75,8 @@ fun Home (
     modifier: Modifier,
     state: HomeViewState,
     navController: NavController,
-    placesRepository: PlacesRepository,
-    location: LocationData?
+    location: LocationData?,
+    homeViewModel: HomeViewModel
 ){
     Column(
         verticalArrangement = Arrangement.Center,
@@ -99,7 +97,7 @@ fun Home (
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        CommonPlacesList(modifier = Modifier, state = state, navController = navController, placesRepository = placesRepository, location = location)
+        CommonPlacesList(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel, location = location)
     }
 
 }
@@ -236,8 +234,8 @@ fun CommonPlacesList(
     modifier: Modifier,
     state: HomeViewState,
     navController: NavController,
-    placesRepository: PlacesRepository,
-    location: LocationData?
+    location: LocationData?,
+    homeViewModel: HomeViewModel
 ){
     when (state) {
         is HomeViewState.Loading -> {
@@ -262,7 +260,7 @@ fun CommonPlacesList(
                     contentPadding = PaddingValues(bottom = 60.dp)) {
                     itemsIndexed(state.commonPlaces) { _, commonPlace ->
                         CommonPlaceCard(place = commonPlace, onClick = {
-                            placesRepository.setPlace(commonPlace.toPlace())
+                            homeViewModel.setPlace(commonPlace.toPlace())
                             navController.navigate(Detail)
                         })
                     }
