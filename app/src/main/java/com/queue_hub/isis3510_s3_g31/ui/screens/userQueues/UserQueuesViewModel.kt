@@ -2,6 +2,7 @@ package com.queue_hub.isis3510_s3_g31.ui.screens.userQueues
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.queues.model.PreviousQueue
 import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
@@ -15,9 +16,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class UserQueuesViewModel(
-    private val queuesRepository: QueuesRepository,
-    private val usersRepository: UsersRepository,
-    private val turnsRepository: TurnsRepository
+    private val dataLayerFacade: DataLayerFacade,
 ): ViewModel() {
 
     private val _queuesState = MutableStateFlow<UserQueuesViewState<List<PreviousQueue>>>(UserQueuesViewState.Loading())
@@ -40,9 +39,9 @@ class UserQueuesViewModel(
 
     private fun initializeTurnAndQueue() {
         viewModelScope.launch(Dispatchers.IO) {
-            val idUser = usersRepository.userId.first()
+            val idUser = dataLayerFacade.getIdUser()
 
-            turnsRepository.getTurn(idUser).collect { turn ->
+            dataLayerFacade.getTurn(idUser).collect { turn ->
                 _turnState.value = UserQueuesViewState.Success(turn)
                 println("Turn Queues view: $turn")
                 if(turn.idPlace.isNotEmpty()){
@@ -57,9 +56,9 @@ class UserQueuesViewModel(
 
     private fun getUserQueues(){
         viewModelScope.launch (Dispatchers.IO){
-            val idUser = usersRepository.userId.first()
+            val idUser = dataLayerFacade.getIdUser()
 
-            queuesRepository.getPreviousUserQueues(idUser).collect{ queues ->
+            dataLayerFacade.getPreviousUserQueues(idUser).collect{ queues ->
                 _queuesState.value = UserQueuesViewState.Success(queues)
             }
         }
@@ -69,14 +68,14 @@ class UserQueuesViewModel(
 
         viewModelScope.launch(Dispatchers.IO) {
             hideCancelDialog()
-            val idUser = usersRepository.userId.first()
-            turnsRepository.cancelTurn(idUser)
+            val idUser = dataLayerFacade.getIdUser()
+            dataLayerFacade.cancelTurn(idUser)
         }
     }
 
     private fun getQueue(idQueue: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            queuesRepository.getQueue(idQueue).collect { queue ->
+            dataLayerFacade.getQueue(idQueue).collect { queue ->
                 _queueState.value = UserQueuesViewState.Success(queue)
             }
         }

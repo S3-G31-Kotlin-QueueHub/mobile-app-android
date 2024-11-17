@@ -200,7 +200,7 @@ fun ContentScreen(modifier: Modifier = Modifier,
             ),
             location = location
         )
-        1 -> UserQueuesScreen(navController = navController, userQueuesViewModel = UserQueuesViewModel(queuesRepository = queuesRepository, usersRepository = usersRepository, turnsRepository = turnsRepository))
+        1 -> UserQueuesScreen(navController = navController, userQueuesViewModel = UserQueuesViewModel(dataLayerFacade = dataLayerFacade))
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(dataLayerFacade = dataLayerFacade))
         3 -> ProfileScreen(navController = navController , profileViewModel = ProfileViewModel(placesRepository = placesRepository, usersRepository = usersRepository, turnsRepository= turnsRepository) ,  modifier = Modifier)
     }
