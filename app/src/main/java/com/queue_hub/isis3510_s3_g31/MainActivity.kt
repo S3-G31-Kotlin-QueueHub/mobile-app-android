@@ -27,6 +27,7 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
+import com.queue_hub.isis3510_s3_g31.data.queues.remote.FirebaseQueueData
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var usersRepository: UsersRepository
     private lateinit var placesRepository: PlacesRepository
     private lateinit var queuesRepository: QueuesRepository
-
+    private lateinit var turnsRepository: TurnsRepository
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -58,23 +59,25 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         auth = Firebase.auth
         db = Firebase.firestore
-        usersRepository = UsersRepository(applicationContext, db = db, auth = auth)
+
 
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
         val turnDb = Room.databaseBuilder(this, TurnsDatabase::class.java , name="turns" ).build()
         val turnDAO = turnDb.dao
+        usersRepository = UsersRepository(applicationContext, db = db, auth = auth)
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
-        val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
-        queuesRepository = QueuesRepository(db)
+        turnsRepository = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
+        queuesRepository = QueuesRepository()
         viewModel.checkAuthState(usersRepository)
         askNotificationPermission();
 
         val dataLayerFacade = DataLayerFacade(
             placesRepository = placesRepository,
-            turnsRepository = repositoryTurns,
+            turnsRepository = turnsRepository,
             queuesRepository = queuesRepository,
-            usersRepository = usersRepository)
+            usersRepository = usersRepository
+        )
 
 
         setContent {
@@ -88,7 +91,7 @@ class MainActivity : ComponentActivity() {
                     auth = auth,
                     db = db,
                     usersRepository = usersRepository,
-                    turnsRepository = repositoryTurns,
+                    turnsRepository = turnsRepository,
                     queuesRepository = queuesRepository,
                     context = this,
                     mainViewModel = viewModel,
