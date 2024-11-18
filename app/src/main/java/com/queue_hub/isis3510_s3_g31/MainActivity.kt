@@ -27,13 +27,13 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
-import com.queue_hub.isis3510_s3_g31.data.queues.remote.FirebaseQueueData
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import com.queue_hub.isis3510_s3_g31.ui.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
+import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationProvider
 
 class MainActivity : ComponentActivity() {
 
@@ -43,6 +43,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var placesRepository: PlacesRepository
     private lateinit var queuesRepository: QueuesRepository
     private lateinit var turnsRepository: TurnsRepository
+    private lateinit var locationProvider: LocationProvider
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -65,6 +66,7 @@ class MainActivity : ComponentActivity() {
         val placesDAO = placesDb.dao
         val turnDb = Room.databaseBuilder(this, TurnsDatabase::class.java , name="turns" ).build()
         val turnDAO = turnDb.dao
+        locationProvider = LocationProvider(this)
         usersRepository = UsersRepository(applicationContext, db = db, auth = auth)
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
         turnsRepository = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
@@ -95,7 +97,8 @@ class MainActivity : ComponentActivity() {
                     queuesRepository = queuesRepository,
                     context = this,
                     mainViewModel = viewModel,
-                    dataLayerFacade = dataLayerFacade
+                    dataLayerFacade = dataLayerFacade,
+                    locationProvider = locationProvider
                 )
             }
         }

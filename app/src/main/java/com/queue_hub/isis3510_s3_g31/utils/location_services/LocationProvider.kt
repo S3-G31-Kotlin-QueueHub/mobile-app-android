@@ -4,50 +4,62 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.os.Looper
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
-import com.google.android.gms.location.LocationRequest
-import com.google.android.gms.location.LocationResult
-import com.google.android.gms.location.LocationServices
-import com.google.android.gms.location.Priority
-import com.queue_hub.isis3510_s3_g31.MainViewModel
+import com.google.android.gms.location.*
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
-class LocationProvider (private val context: Context){
-
-    fun hasLocationPermission(context: Context): Boolean{
-        return if(ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-                &&
-                ContextCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED ){
-            true
-        }else{
-            false
-        }
-    }
+class LocationProvider(private val context: Context) {
 
     private var _fusedLocationClient: FusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(context)
 
+
+    fun hasLocationPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            context, Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
     @SuppressLint("MissingPermission")
-    fun requestLocationUpdates(mainViewModel: MainViewModel){
-        val locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult : LocationResult) {
+
+    fun requestLocationUpdates(): Flow<LocationData> = callbackFlow {
+        if (!hasLocationPermission()) {
+            close()
+            return@callbackFlow
+        }
+
+        val locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
-                locationResult.lastLocation?.let{
-                    val location = LocationData(latitude = it.latitude, longitude = it.longitude)
-                    mainViewModel.updateLocation(location)
+                locationResult.lastLocation?.let {
+                    trySend(LocationData(it.latitude, it.longitude)).isSuccess
                 }
             }
         }
 
-        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
 
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000).build()
         _fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+
+
+        awaitClose {
+            _fusedLocationClient.removeLocationUpdates(locationCallback)
+        }
+    }
+
+
+    @SuppressLint("MissingPermission")
+    suspend fun getLastLocation(): LocationData? {
+        return if (hasLocationPermission()) {
+            val location = _fusedLocationClient.lastLocation.await()
+            location?.let { LocationData(it.latitude, it.longitude) }
+        } else {
+            null
+        }
     }
 }

@@ -57,7 +57,8 @@ fun HomeScreen(
     navController: NavController,
     modifier: Modifier,
     homeViewModel: HomeViewModel,
-    location: LocationData?
+
+
 ) {
     val state by homeViewModel.uiState.collectAsState()
 
@@ -66,7 +67,7 @@ fun HomeScreen(
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel, location = location)
+        Home(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel)
     }
 }
 
@@ -75,7 +76,6 @@ fun Home (
     modifier: Modifier,
     state: HomeViewState,
     navController: NavController,
-    location: LocationData?,
     homeViewModel: HomeViewModel
 ){
     Column(
@@ -97,7 +97,7 @@ fun Home (
             style = MaterialTheme.typography.headlineMedium,
         )
         Spacer(modifier = Modifier.padding(8.dp))
-        CommonPlacesList(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel, location = location)
+        CommonPlacesList(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel)
     }
 
 }
@@ -228,36 +228,40 @@ fun ClickableHorizontalOption(
         }
     }
 }
-
 @Composable
 fun CommonPlacesList(
     modifier: Modifier,
     state: HomeViewState,
     navController: NavController,
-    location: LocationData?,
     homeViewModel: HomeViewModel
-){
+) {
+
+    val locationData by homeViewModel.locationData.collectAsState(initial = null)
+
     when (state) {
         is HomeViewState.Loading -> {
             CircularProgressIndicator()
         }
         is HomeViewState.Success -> {
-            if(state.commonPlaces.isEmpty()){
-                if(location != null){
+            if (state.commonPlaces.isEmpty()) {
+                if (locationData != null) {
                     Text(
-                        text = "Latitude ${location.latitude}, Longitude ${location.longitude}",
+                        text = "Latitude ${locationData!!.latitude}, Longitude ${locationData!!.longitude}",
                         textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
-                }else{
+                } else {
                     Text(
                         text = stringResource(R.string.home_no_common_places),
                         textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
-            }else{
+            } else {
                 LazyColumn(
                     modifier = modifier,
-                    contentPadding = PaddingValues(bottom = 60.dp)) {
+                    contentPadding = PaddingValues(bottom = 60.dp)
+                ) {
                     itemsIndexed(state.commonPlaces) { _, commonPlace ->
                         CommonPlaceCard(place = commonPlace, onClick = {
                             homeViewModel.setPlace(commonPlace.toPlace())
@@ -268,11 +272,14 @@ fun CommonPlacesList(
             }
         }
         is HomeViewState.Error -> {
-            Text(text = state.message)
+            Text(
+                text = state.message,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
-
 
 
 
