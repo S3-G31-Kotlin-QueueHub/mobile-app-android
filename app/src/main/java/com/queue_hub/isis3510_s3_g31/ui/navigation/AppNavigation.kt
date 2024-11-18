@@ -70,7 +70,7 @@ fun AppNavigation(
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( dataLayerFacade ))
         }
         composable<Detail>{
-            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository))
+            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( dataLayerFacade))
         }
         composable<SignUp> {
             SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, usersRepository = usersRepository), auth = auth, db = db)

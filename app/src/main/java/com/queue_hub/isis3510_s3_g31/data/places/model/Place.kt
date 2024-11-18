@@ -7,13 +7,27 @@ data class Place(
     val name: String,
     val address: String,
     val phone: String,
-    val localization: String,
+    var localization: String,
     val image: String,
     val averageWaitingTime: Int,
     val averageWaitingTimeLastHour: Int,
     val averageScoreReview: Float,
     val bestAverageFrame: String,
-)
+){
+    // Constructor sin argumentos para Firebase
+    constructor() : this(
+        id = "",
+        name = "",
+        address = "",
+        phone = "",
+        localization = "",
+        image = "",
+        averageWaitingTime = 0,
+        averageWaitingTimeLastHour = 0,
+        averageScoreReview = 0f,
+        bestAverageFrame = ""
+    )
+}
 
 // 1. Establecimiento son menos tiempo de espera en la ultima hora  /places/shortest-time-lasthour
 // 2. Cuales son los tiempos de espera mas cortos en un establecimiento en particular /places/

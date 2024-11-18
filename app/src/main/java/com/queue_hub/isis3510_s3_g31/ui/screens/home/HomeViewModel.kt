@@ -51,7 +51,7 @@ class HomeViewModel(
     fun setPlace(place: Place) {
 
         viewModelScope.launch (Dispatchers.IO){
-            dataLayerFacade.setPlaceToDetail(place)
+            dataLayerFacade.setPlaceToDetail(place.id)
         }
 
     }

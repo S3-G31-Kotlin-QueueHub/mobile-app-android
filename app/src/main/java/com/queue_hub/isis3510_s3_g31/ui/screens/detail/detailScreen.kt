@@ -28,19 +28,23 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Icon
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Home
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Text
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
+import androidx.compose.material3.MaterialTheme.colorScheme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -51,50 +55,85 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
-import com.queue_hub.isis3510_s3_g31.ui.screens.home.Home
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 
 
 @Composable
 fun DetailScreen(navController: NavController, modifier: Modifier, detailViewModel: DetailViewModel) {
+
     Box(
         Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Detail(modifier = Modifier, navController =  navController, detailViewModel)
+
+
+        Detail(
+            modifier = Modifier,
+            navController = navController,
+            detailViewModel = detailViewModel
+        )
     }
 }
 
 @Composable
 fun Detail (modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel){
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
         HeaderImage(modifier = Modifier, navController =navController)
+
         Spacer(modifier = Modifier.padding(8.dp))
 
+        val isLoading = detailViewModel.isLoading.value
+        var showContent by remember { mutableStateOf(false) }
+
+        LaunchedEffect(isLoading) {
+            if (isLoading) {
+                showContent = false
+            } else {
+                delay(1000)
+                showContent = true
+            }
+        }
+        if (showContent) {
         Spacer(modifier = Modifier.padding(8.dp))
         HomeOptions(modifier = Modifier, detailViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
         Buttons(modifier, navController, detailViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
-
+        } else {
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                CircularProgressIndicator()
+            }
+        }
     }
-
-}
+    }
 
 
 @Composable
-fun Buttons(modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel) {
-    val scope = rememberCoroutineScope()
-    val queuedState by detailViewModel.queued_state.observeAsState(initial = false)
+fun Buttons(
+    modifier: Modifier = Modifier,
+    navController: NavController,
+    detailViewModel: DetailViewModel
+) {
+
+    val queuedState = detailViewModel.queuedState.value
 
     Column(
         modifier = modifier
@@ -102,35 +141,31 @@ fun Buttons(modifier: Modifier, navController: NavController, detailViewModel: D
     ) {
         Button(
             onClick = {
-                scope.launch {
-                if(!queuedState){
+                if (!queuedState) {
                     detailViewModel.addTurn()
-                    navController.navigate(Wait){
+                    navController.navigate(Wait) {
                         popUpTo(navController.graph.startDestinationId) {
                             inclusive = true
                         }
                     }
-                }else{
-
-                    navController.navigate(Home);
-
+                } else {
+                    navController.navigate(Home)
                 }
-
-            }},
-            modifier = Modifier.fillMaxWidth() ,
+            },
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = DarkGreen,
                 contentColor = Color.White
             )
         ) {
-            Text(text = "Give me a turn.")
+            Text(text = if (queuedState) "Go to Home" else "Give me a turn.")
         }
 
         Button(
             onClick = {
 
             },
-            modifier = Modifier.fillMaxWidth() ,
+            modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = LightGreen,
                 contentColor = Color.White
@@ -140,6 +175,7 @@ fun Buttons(modifier: Modifier, navController: NavController, detailViewModel: D
         }
     }
 }
+
 @Composable
 fun HeaderImage(modifier: Modifier, navController: NavController) {
     val logoImage = painterResource(R.drawable.queuehub_logo)
@@ -191,10 +227,9 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 
             ClickableVerticalOption(
 
-                image = painterResource(id = R.drawable.img_1),
+
                 modifier = Modifier.weight(1f),
-                detailViewModel,
-                detailViewModel.userId
+                detailViewModel
 
             )
 
@@ -209,18 +244,22 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun ClickableVerticalOption(
-    image: Painter,
+
     modifier: Modifier,
-    detailViewModel: DetailViewModel,
-    userId: String?
+    detailViewModel: DetailViewModel
 ) {
+    val onQueue = detailViewModel.onQueue.value
+    val place = detailViewModel.place.value
     Card(
         modifier = modifier
             .padding(8.dp)
             .fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 30.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.onPrimary)
 
         ) {
         Column(
@@ -232,23 +271,30 @@ fun ClickableVerticalOption(
 
         ) {
             Text(
-                text = detailViewModel.state.place.name,
+                text = place.name,
                 style = MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )
             Text(
-                text = detailViewModel.state.place.address,
+                text = place.address,
                 style = MaterialTheme.typography.titleLarge.copy(),
                 textAlign = TextAlign.Center
             )
-            Image(
-                painter = image,
-                contentDescription = null,
+            GlideImage(
+                model =place.image,
+                contentDescription = "Queue Image",
                 modifier = Modifier
                     .size(300.dp)
-                    .fillMaxWidth()
-
-            )
+                    .fillMaxWidth(),
+                contentScale = ContentScale.FillHeight,
+            ) { requestBuilder ->
+                requestBuilder
+                    .centerCrop()
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .placeholder(R.drawable.comida__1_)
+                    .error(R.drawable.comida__1_)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+            }
 
 
         }
@@ -264,19 +310,19 @@ fun ClickableVerticalOption(
 
         ) {
             Text(
-                text = "Average Waiting Time: ${detailViewModel.state.place.averageWaitingTime} min",
+                text = "Average Waiting Time: ${place.averageWaitingTime} min",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
-                text = "Best arrival time: ${detailViewModel.state.place.bestAverageFrame}",
+                text = "Best arrival time: ${place.bestAverageFrame}",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
-                text = "People on Queue: ${detailViewModel.state.onQueue}",
+                text = "People on Queue: ${onQueue}",
                 style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
