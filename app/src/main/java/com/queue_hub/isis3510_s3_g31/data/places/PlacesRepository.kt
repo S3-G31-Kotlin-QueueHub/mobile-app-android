@@ -1,6 +1,7 @@
 package com.queue_hub.isis3510_s3_g31.data.places
 
 
+import android.util.ArrayMap
 import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
@@ -25,6 +26,7 @@ class PlacesRepository (
     private val placesDao: PlacesDao,
     private  val api: PlacesApi,
     private val db: FirebaseFirestore,
+    private var allPlacesCache: ArrayMap<String,Place>? = null,
     private var place: Place = Place(
         id = "1",
         name = "No name",
@@ -46,7 +48,7 @@ class PlacesRepository (
 
         try {
             val result = allPlacesRef.get().await()
-
+            this.allPlacesCache = ArrayMap(result.size() + 5) // Se crea el cache
             for (document in result) {
                 val id = document.id
                 val name = document.getString("name") ?: ""
@@ -61,27 +63,49 @@ class PlacesRepository (
                 val averageWaitingTimeLastHour = (document.get("averageWaitingTimeLastHour") as? Number)?.toInt() ?: 0
                 val averageScoreReview = (document.get("averageScoreReview") as? Number)?.toFloat() ?: 0f
 
-                places.add(
-                    Place(
-                        id,
-                        name,
-                        address,
-                        phone,
-                        localization,
-                        image,
-                        averageWaitingTime,
-                        averageWaitingTimeLastHour,
-                        averageScoreReview,
-                        bestAverageFrame
-                    )
+                val place = Place(
+                    id,
+                    name,
+                    address,
+                    phone,
+                    localization,
+                    image,
+                    averageWaitingTime,
+                    averageWaitingTimeLastHour,
+                    averageScoreReview,
+                    bestAverageFrame
                 )
+                this.allPlacesCache!![id] = place
+                places.add(place)
             }
         } catch (e: Exception) {
-            Log.e("DatosPlaces", "Error getting documents: ", e)
+            Log.e("DatosPlaces", "Error getting all places: ", e)
         }
 
         return places
     }
+
+    suspend fun getLessWaitingTimeLastHour() : List<Place>{
+        val places = mutableListOf<Place>()
+        val lessWaitingTimeRef = db.collection("recommendedPlaces").document("lestTimeLastHour")
+        try {
+            val result = lessWaitingTimeRef.get().await()
+            val dataMap = result.data ?: emptyMap()
+            val keys = dataMap.keys.toList()
+
+            for(place in keys){
+                val place = this.allPlacesCache!![place]
+                if (place != null) {
+                    places.add(place)
+                }
+            }
+        }catch (e: Exception){
+            Log.e("DatosPlaces", "Error getLessWaitingTimeLastHour ", e)
+        }
+        return places
+    }
+
+
 
     suspend fun getCommonPlaces(idUser: String): Flow<List<CommonPlace>> = callbackFlow {
         val commonPlacesRef = db.collection("commonPlaces").document(idUser)
@@ -151,18 +175,7 @@ class PlacesRepository (
         }
     }
 
-    suspend fun getRecommendedPlaces (): List<Place>{
-        try {
-            val response = api.getShortestTimePlacesLastHour()
-            val places : List<Place> = response.map {
-                it.toDomain()
-            }
-            return places
 
-        }catch (e: Exception){
-            return getPlaces()
-        }
-    }
 
     suspend fun getPlace (): Place {
         //TO DO
