@@ -78,7 +78,8 @@ class MainActivity : ComponentActivity() {
             placesRepository = placesRepository,
             turnsRepository = turnsRepository,
             queuesRepository = queuesRepository,
-            usersRepository = usersRepository
+            usersRepository = usersRepository,
+            locationProvider = locationProvider
         )
 
 

@@ -12,8 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val dataLayerFacade: DataLayerFacade,
-    private val locationProvider: LocationProvider
+    private val dataLayerFacade: DataLayerFacade
 ): ViewModel(){
 
 
@@ -35,6 +34,7 @@ class HomeViewModel(
             println("idUser: $idUser")
 
             dataLayerFacade.getCommonPlaces(idUser).collect{ commonPlaces ->
+
                 _uiState.value = HomeViewState.Success(commonPlaces, null)
             }
         }
@@ -42,7 +42,7 @@ class HomeViewModel(
     private fun startLocationUpdates() {
         viewModelScope.launch {
 
-            locationProvider.requestLocationUpdates().collect { location ->
+            dataLayerFacade.requestLocationUpdates().collect { location ->
                 _locationData.value = location
             }
         }

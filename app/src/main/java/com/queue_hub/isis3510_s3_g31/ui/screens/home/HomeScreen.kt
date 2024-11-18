@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -50,6 +51,7 @@ import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
+import com.queue_hub.isis3510_s3_g31.utils.location_services.DistanceCalculator
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 
 @Composable
@@ -244,19 +246,13 @@ fun CommonPlacesList(
         }
         is HomeViewState.Success -> {
             if (state.commonPlaces.isEmpty()) {
-                if (locationData != null) {
-                    Text(
-                        text = "Latitude ${locationData!!.latitude}, Longitude ${locationData!!.longitude}",
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                } else {
-                    Text(
-                        text = stringResource(R.string.home_no_common_places),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
+
+                Text(
+                    text = stringResource(R.string.home_no_common_places),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
             } else {
                 LazyColumn(
                     modifier = modifier,
@@ -266,7 +262,7 @@ fun CommonPlacesList(
                         CommonPlaceCard(place = commonPlace, onClick = {
                             homeViewModel.setPlace(commonPlace.toPlace())
                             navController.navigate(Detail)
-                        })
+                        },locationData)
                     }
                 }
             }
@@ -285,7 +281,21 @@ fun CommonPlacesList(
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
+fun CommonPlaceCard(
+    place: CommonPlace,
+    onClick: () -> Unit,
+    locationData: LocationData?
+) {
+
+    val distance = locationData?.let { location ->
+        DistanceCalculator.getInstance().calculateHaversine(
+            location.latitude,
+            location.longitude,
+            place.localization.latitude,
+            place.localization.longitude
+        )
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -311,14 +321,45 @@ fun CommonPlaceCard(place: CommonPlace, onClick: () -> Unit) {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(
-                    text = place.name,
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.SemiBold
-                    ),
-                    color = colorScheme.onSurface
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = place.name,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        color = colorScheme.onSurface
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Info,
+                            contentDescription = null,
+                            modifier = Modifier.size(16.dp),
+                            tint = colorScheme.primary
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
 
+                        if(distance != null){
+                            Text(
+                                text = "${String.format("%.1f", distance)} km away",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colorScheme.onSurfaceVariant
+                            )
+                        }else{
+                            Text(
+                                text = "Distance unknown",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+
+                }
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
