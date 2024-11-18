@@ -42,16 +42,20 @@ fun AppNavigation(
     turnsRepository: TurnsRepository,
     startDestination: Any,
     queuesRepository: QueuesRepository,
-    context : Context,
+    context: Context,
     mainViewModel: MainViewModel,
-    dataLayerFacade: DataLayerFacade
-) {
+    dataLayerFacade: DataLayerFacade,
+    locationProvider: LocationProvider,
+
+    ) {
 
     val navController = rememberNavController()
 
     NavHost(
         navController = navController,
-        startDestination= startDestination
+        startDestination= startDestination,
+
+
     ){
         composable<Login> {
            LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController, auth = auth )
@@ -60,7 +64,7 @@ fun AppNavigation(
             MainScreen(navController = navController, placesRepository = placesRepository, usersRepository = usersRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel, dataLayerFacade = dataLayerFacade )
         }
         composable<Home> {
-            HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( dataLayerFacade ), location = null)
+            HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( dataLayerFacade, locationProvider ))
         }
         composable<Recommended>{
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( dataLayerFacade ))

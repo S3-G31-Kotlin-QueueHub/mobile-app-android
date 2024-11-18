@@ -2,7 +2,6 @@ package com.queue_hub.isis3510_s3_g31
 
 import android.Manifest
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -46,7 +45,6 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.userQueues.UserQueuesScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.userQueues.UserQueuesViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
-import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationProvider
 
 @Composable
@@ -82,7 +80,7 @@ fun MainScreen(navController: NavController,
     var selectedIndex by remember {
         mutableIntStateOf(0)
     }
-    val location = mainViewModel.location.value
+
     val requestPermissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestMultiplePermissions() ,
         onResult = { permissions ->
@@ -90,9 +88,9 @@ fun MainScreen(navController: NavController,
                 &&
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true
             ) {
-                locationProvider.requestLocationUpdates(mainViewModel)
+                locationProvider.requestLocationUpdates()
             } else {
-                // ask for permission
+
                 val rationaleRequired = ActivityCompat.shouldShowRequestPermissionRationale(
                     context as MainActivity,
                     Manifest.permission.ACCESS_FINE_LOCATION ) ||
@@ -103,18 +101,18 @@ fun MainScreen(navController: NavController,
                 if(rationaleRequired) {
                     Toast.makeText(context,"This feature require location permission",Toast.LENGTH_LONG).show()
                 }else{
-                    // need to set the permission from setting.
+
                     Toast.makeText(context,"Please enable location permission from android setting",Toast.LENGTH_LONG).show()
                 }
             }
         })
 
     LaunchedEffect(Unit) {
-        if(locationProvider.hasLocationPermission(context)) {
-            locationProvider.requestLocationUpdates(mainViewModel = mainViewModel)
-            Log.d("Localizacion", "${location}")
+        if(locationProvider.hasLocationPermission()) {
+            locationProvider.requestLocationUpdates()
+
         }else {
-            // Request location permission
+
             requestPermissionLauncher.launch(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -171,7 +169,7 @@ fun MainScreen(navController: NavController,
             usersRepository = usersRepository,
             turnsRepository = turnsRepository,
             queuesRepository = queuesRepository,
-            location = location,
+            locationProvider = locationProvider,
             dataLayerFacade = dataLayerFacade
             )
 
@@ -187,7 +185,7 @@ fun ContentScreen(modifier: Modifier = Modifier,
                   usersRepository: UsersRepository,
                   turnsRepository: TurnsRepository,
                   queuesRepository: QueuesRepository,
-                  location: LocationData?,
+                  locationProvider: LocationProvider,
                   dataLayerFacade: DataLayerFacade){
 
     when(selectedIndex){
@@ -196,9 +194,9 @@ fun ContentScreen(modifier: Modifier = Modifier,
             navController = navController,
             modifier = Modifier,
             homeViewModel = HomeViewModel(
-                dataLayerFacade
-            ),
-            location = location
+                dataLayerFacade,
+                locationProvider
+            )
         )
         1 -> UserQueuesScreen(navController = navController, userQueuesViewModel = UserQueuesViewModel(dataLayerFacade = dataLayerFacade))
         2 -> RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel(dataLayerFacade = dataLayerFacade))
