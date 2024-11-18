@@ -43,6 +43,12 @@ class RecommendedViewModel ( private val dataLayerFacade: DataLayerFacade): View
         }
     }
 
+     fun uploadPlace(placeId:String){
+        viewModelScope.launch (Dispatchers.IO) {
+            dataLayerFacade.setPlaceToDetail(placeId)
+        }
+    }
+
     private fun getLessWaitingTimeLastHour(){
 
         viewModelScope.launch (Dispatchers.IO){

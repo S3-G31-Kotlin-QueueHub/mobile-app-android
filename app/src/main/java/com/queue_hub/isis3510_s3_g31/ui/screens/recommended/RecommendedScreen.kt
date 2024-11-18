@@ -129,15 +129,15 @@ fun Recommended (modifier: Modifier, state: RecommendedViewState, navController:
 
 
         Spacer(modifier = Modifier.padding(8.dp))
-        RecommendedPlacesList(modifier = Modifier, places = state.places, state = state, navController = navController)
+        RecommendedPlacesList(modifier = Modifier, places = state.places, state = state, navController = navController, recommendedViewModel)
     }
 }
 
 @Composable
-fun RecommendedPlacesList(modifier: Modifier, places: List<Place>, state: RecommendedViewState, navController: NavController){
+fun RecommendedPlacesList(modifier: Modifier, places: List<Place>, state: RecommendedViewState, navController: NavController, recommendedViewModel: RecommendedViewModel){
     LazyColumn(modifier = Modifier.fillMaxWidth()) {
         items(places) { place ->
-            CommonPlaceCard(place = place, onClick = { })
+            CommonPlaceCard(place = place, onClick = { recommendedViewModel.uploadPlace(place.id);navController.navigate(Detail)})
         }
     }
 }

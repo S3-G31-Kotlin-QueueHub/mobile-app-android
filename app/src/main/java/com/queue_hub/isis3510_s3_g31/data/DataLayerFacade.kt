@@ -22,8 +22,14 @@ class DataLayerFacade(
     private val locationProvider: LocationProvider
 ) {
 
-    suspend fun setPlaceToDetail(place: Place) {
-        this.placesRepository.setPlace(place)
+    suspend fun setPlaceToDetail(idPlace: String) {
+        this.placesRepository.setPlace(idPlace)
+    }
+    suspend fun getPlaceToDetail():Place? {
+        return this.placesRepository.getPlace()
+    }
+    suspend fun getTurnsNumberByUser(userId:String):Int{
+        return this.turnsRepository.getTurnsLength(userId)
     }
 
     suspend fun getAllPlaces() : List<Place> {
@@ -52,7 +58,9 @@ class DataLayerFacade(
     suspend fun getTurn(idUser: String): Flow<Turn> {
         return turnsRepository.getTurn(idUser)
     }
-
+    suspend fun addTurn(idUser: String, idPlace: String):Boolean{
+        return turnsRepository.addTurn(idUser,idPlace )
+    }
     suspend fun cancelTurn(idUser: String): Boolean {
         return turnsRepository.cancelTurn(idUser)
     }

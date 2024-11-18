@@ -1,58 +1,53 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
 
-import android.content.Context
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
-import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
-import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
-class DetailViewModel (private val placesRepository: PlacesRepository, private val usersRepository: UsersRepository, private val turnsRepository: TurnsRepository): ViewModel() {
+class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel() {
 
-    var state by mutableStateOf(DetailViewState())
-        private set
-    var userId by mutableStateOf<String?>("null")
-    private val _queued_state = MutableLiveData<Boolean>()
-    val queued_state: LiveData<Boolean> = _queued_state
+
+    val place = mutableStateOf(Place())
+    val isLoading = mutableStateOf(true)
+    val queuedState = mutableStateOf(false)
+    val onQueue = mutableStateOf(0)
 
     init {
-        viewModelScope.launch {
-            userId = usersRepository.userId.first()
-            state = state.copy(
-                place = getPlace(), onQueue = getPeopleOnQueue()
-            )
-            getActiveTurn()
-        };
-
-    }
-    suspend fun getActiveTurn() {
-        _queued_state.value = false
-
+        getPlace()
     }
 
-     suspend fun getPlace() : Place{
+    private fun getPlace() {
+        viewModelScope.launch(Dispatchers.IO) {
+            isLoading.value = true // Activa la carga al iniciar la operación
+            val fetchedPlace = dataLayerFacade.getPlaceToDetail() ?: Place()
+            place.value = fetchedPlace
 
-            return placesRepository.getPlace()
+            // Actualizar información adicional
+            onQueue.value = dataLayerFacade.getTurnsNumberByUser(fetchedPlace.id)
+
+            isLoading.value = false // Desactiva la carga al finalizar
+        }
     }
-    suspend fun getPeopleOnQueue() : Int{
 
-        return turnsRepository.getTurnsLength(state.place.id)
-    }
 
-    suspend fun addTurn(){
-        _queued_state.value = turnsRepository.addTurn(userId.orEmpty(), state.place.id)
+    //    private  fun getActiveTurn() {
+//        _queuedState.value = true
+//    }
+//
+    fun addTurn() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = dataLayerFacade.getIdUser()
+            val success = dataLayerFacade.addTurn(userId.orEmpty(), place.value.id)
+            queuedState.value = success
+        }
     }
 }
 

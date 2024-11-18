@@ -3,6 +3,7 @@ package com.queue_hub.isis3510_s3_g31.data.places
 
 import android.util.ArrayMap
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
@@ -18,6 +19,7 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -26,19 +28,9 @@ class PlacesRepository (
     private val placesDao: PlacesDao,
     private  val api: PlacesApi,
     private val db: FirebaseFirestore,
+
     private var allPlacesCache: ArrayMap<String,Place>? = null,
-    private var place: Place = Place(
-        id = "1",
-        name = "No name",
-        address = "No address",
-        phone = "000-000-000",
-        localization ="",
-        image = "https://24ai.tech/es/wp-content/uploads/sites/5/2023/10/01_product_1_sdelat-kvadratnym-3-1.jpg",
-        averageWaitingTime = 0,
-        averageWaitingTimeLastHour = 0,
-        averageScoreReview = 0f,
-        bestAverageFrame = "empty"
-    )
+    private var place:String = ""
 ){
 
     suspend fun getAllPlaces() : List<Place>{
@@ -177,13 +169,53 @@ class PlacesRepository (
 
 
 
-    suspend fun getPlace (): Place {
-        //TO DO
-        return place
+
+
+    suspend fun getPlace() :Place?{
+        println("Buscando lugar con ID: $place")
+        val placeState = mutableStateOf<Place?>(null)
+        try {
+            val document = db.collection("places").document(place).get().await()
+            if (document.exists()) {
+                val id = document.id
+                val name = document.getString("name") ?: ""
+                val address = document.getString("address") ?: ""
+                val phone = document.getString("phone") ?: ""
+                val localization = (document.get("localization") as? GeoPoint)?.let {
+                    "${it.latitude}, ${it.longitude}"
+                } ?: "0, 0"
+                val image = document.getString("image") ?: ""
+                val bestAverageFrame = document.getString("bestAverageFrame") ?: ""
+                val averageWaitingTime = (document.get("averageWaitingTime") as? Number)?.toInt() ?: 0
+                val averageWaitingTimeLastHour = (document.get("averageWaitingTimeLastHour") as? Number)?.toInt() ?: 0
+                val averageScoreReview = (document.get("averageScoreReview") as? Number)?.toFloat() ?: 0f
+
+                // Actualiza el estado observable con el nuevo objeto Place
+                placeState.value = Place(
+                    id,
+                    name,
+                    address,
+                    phone,
+                    localization,
+                    image,
+                    averageWaitingTime,
+                    averageWaitingTimeLastHour,
+                    averageScoreReview,
+                    bestAverageFrame
+                )
+            } else {
+                placeState.value = null
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            placeState.value = null
+        }
+        return placeState.value
     }
 
-    fun setPlace (place: Place){
-        this.place = place
+
+    fun setPlace (idPlace: String){
+        this.place = idPlace
     }
 
     suspend fun getPlaces(): List<Place> {

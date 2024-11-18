@@ -150,14 +150,21 @@ class TurnsRepository(
         }
     }
     suspend fun getTurnsLength(placeId: String): Int {
-        var turnsCount = 0
-
-
-
-
-
-        return turnsCount
+        println("Looking for queue of place "+ placeId)
+        return try {
+            val documentSnapshot = db.collection("queues").document(placeId).get().await()
+            if (documentSnapshot.exists()) {
+                val turnsList = documentSnapshot.get("turns") as? List<*>
+                turnsList?.size ?: 0
+            } else {
+                0
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
     }
+
 
 
 
