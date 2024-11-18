@@ -151,7 +151,7 @@ class PlacesRepository (
                                                 city = placeDoc.getString("city") ?: "",
                                                 localization = placeDoc.getGeoPoint("localization")  ?: GeoPoint(0.0, 0.0),
                                                 type = placeDoc.getString("type") ?: "",
-                                                visitCount = visitCount
+                                                visitCount = visitCount,
                                             ).toDomain()
                                         } else null
                                     } catch (e: Exception) {

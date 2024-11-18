@@ -64,7 +64,7 @@ fun AppNavigation(
             MainScreen(navController = navController, placesRepository = placesRepository, usersRepository = usersRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel, dataLayerFacade = dataLayerFacade )
         }
         composable<Home> {
-            HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( dataLayerFacade, locationProvider ))
+            HomeScreen(navController = navController, modifier = Modifier, homeViewModel = HomeViewModel( dataLayerFacade ))
         }
         composable<Recommended>{
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( dataLayerFacade ))

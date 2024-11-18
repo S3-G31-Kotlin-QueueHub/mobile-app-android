@@ -68,7 +68,8 @@ fun CommonPlaceFirestore.toDomain() : CommonPlace {
         phone = this.phone,
         image = this.image,
         lastVisit = this.lastVisit.toString(),
-        city = this.city
+        city = this.city,
+        localization = this.localization
     )
 }
 

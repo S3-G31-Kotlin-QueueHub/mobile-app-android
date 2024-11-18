@@ -194,8 +194,7 @@ fun ContentScreen(modifier: Modifier = Modifier,
             navController = navController,
             modifier = Modifier,
             homeViewModel = HomeViewModel(
-                dataLayerFacade,
-                locationProvider
+                dataLayerFacade
             )
         )
         1 -> UserQueuesScreen(navController = navController, userQueuesViewModel = UserQueuesViewModel(dataLayerFacade = dataLayerFacade))
