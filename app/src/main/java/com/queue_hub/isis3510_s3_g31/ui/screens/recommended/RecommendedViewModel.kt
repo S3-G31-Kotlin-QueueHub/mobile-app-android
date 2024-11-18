@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
@@ -36,8 +37,38 @@ class RecommendedViewModel ( private val dataLayerFacade: DataLayerFacade): View
             }
             state = state.copy(
                 places = allPlaces,
-                isLoading = false
+                isLoading = false,
+                selectedCategory = RecommendedCategory.ALL
             )
+        }
+    }
+
+    private fun getLessWaitingTimeLastHour(){
+
+        viewModelScope.launch (Dispatchers.IO){
+            val lessWaitingTime : List<Place> = dataLayerFacade.getLessWaitingTimeLastHour()
+            state = state.copy(
+                places = lessWaitingTime,
+                isLoading = false,
+                selectedCategory = RecommendedCategory.LESSWAITINGTIMELASTHOUR
+            )
+        }
+    }
+
+    fun updateSelectedCategory( recommendedCategory: RecommendedCategory ){
+
+        state = state.copy(
+            isLoading = true,
+            selectedCategory = recommendedCategory
+        )
+
+        viewModelScope.launch (Dispatchers.Default){
+
+            when (recommendedCategory) {
+                RecommendedCategory.ALL -> getAllPlaces()
+                RecommendedCategory.LESSWAITINGTIMELASTHOUR -> getLessWaitingTimeLastHour()
+            }
+
         }
     }
 

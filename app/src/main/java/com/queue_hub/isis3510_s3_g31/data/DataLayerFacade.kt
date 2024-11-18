@@ -30,6 +30,10 @@ class DataLayerFacade(
         return placesRepository.getAllPlaces()
     }
 
+    suspend fun getLessWaitingTimeLastHour(): List<Place>{
+        return placesRepository.getLessWaitingTimeLastHour()
+    }
+
     suspend fun getIdUser(): String {
         return usersRepository.userId.first()
     }
