@@ -239,6 +239,11 @@ fun CommonPlacesList(
 ) {
 
     val locationData by homeViewModel.locationData.collectAsState(initial = null)
+    val isConnected by homeViewModel.isConnected.collectAsState(initial = false)
+    Text(
+        text = if (isConnected) "Connected" else "Disconnected",
+        color = if (isConnected) androidx.compose.ui.graphics.Color.Green else androidx.compose.ui.graphics.Color.Red
+    )
 
     when (state) {
         is HomeViewState.Loading -> {

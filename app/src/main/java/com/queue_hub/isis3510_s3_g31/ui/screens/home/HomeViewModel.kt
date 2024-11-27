@@ -18,12 +18,18 @@ class HomeViewModel(
 
     private val _uiState = MutableStateFlow<HomeViewState>(HomeViewState.Loading)
     val uiState: StateFlow<HomeViewState> = _uiState
+
     private val _locationData = MutableStateFlow<LocationData?>(null)
     val locationData: StateFlow<LocationData?> get() = _locationData
+
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
 
     init {
         getCommonPlaces()
         startLocationUpdates()
+        checkInternetConnection()
 
     }
 
@@ -39,11 +45,20 @@ class HomeViewModel(
             }
         }
     }
+
     private fun startLocationUpdates() {
         viewModelScope.launch {
 
             dataLayerFacade.requestLocationUpdates().collect { location ->
                 _locationData.value = location
+            }
+        }
+    }
+
+    private fun checkInternetConnection() {
+        viewModelScope.launch {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
             }
         }
     }
