@@ -3,9 +3,12 @@ package com.queue_hub.isis3510_s3_g31.ui.screens.wait
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
+import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import com.queue_hub.isis3510_s3_g31.ui.screens.userQueues.UserQueuesViewState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -36,9 +39,11 @@ class WaitViewModel(
             val idUser = usersRepository.userId.first()
 
             turnsRepository.getTurn(idUser).collect{ turn ->
-                val idPlace = turn.idPlace
-                queuesRepository.getQueue(idPlace).collect{ queue ->
-                    _uiState.value = WaitViewState.Success(turn, queue)
+
+                if(turn.idPlace.isNotEmpty()){
+                    queuesRepository.getQueue(turn.idPlace).collect{ queue ->
+                        _uiState.value = WaitViewState.Success(turn, queue)
+                    }
                 }
             }
         }
