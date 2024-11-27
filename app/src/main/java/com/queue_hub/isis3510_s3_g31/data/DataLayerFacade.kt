@@ -11,6 +11,7 @@ import com.queue_hub.isis3510_s3_g31.data.turns.model.Turn
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationProvider
+import com.queue_hub.isis3510_s3_g31.utils.network_services.NetworkManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 
@@ -19,8 +20,9 @@ class DataLayerFacade(
     private val turnsRepository: TurnsRepository,
     private val queuesRepository: QueuesRepository,
     private val usersRepository: UsersRepository,
-    private val locationProvider: LocationProvider
-) {
+    private val locationProvider: LocationProvider,
+    private val networkManager: NetworkManager
+    ) {
 
     suspend fun setPlaceToDetail(idPlace: String) {
         this.placesRepository.setPlace(idPlace)
@@ -67,6 +69,10 @@ class DataLayerFacade(
 
     suspend fun requestLocationUpdates(): Flow<LocationData> {
         return locationProvider.requestLocationUpdates()
+    }
+
+    suspend fun checkNetworkConnection(): Flow<Boolean> {
+        return networkManager.isConnected
     }
 
 
