@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LocationOn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,6 +52,7 @@ import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Recommended
 import com.queue_hub.isis3510_s3_g31.utils.location_services.DistanceCalculator
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 
@@ -58,18 +60,49 @@ import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 fun HomeScreen(
     navController: NavController,
     modifier: Modifier,
-    homeViewModel: HomeViewModel,
-
-
+    homeViewModel: HomeViewModel
 ) {
     val state by homeViewModel.uiState.collectAsState()
+
 
     Box(
         Modifier
             .fillMaxSize()
             .padding(20.dp)
     ) {
-        Home(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel)
+            Home(modifier = Modifier, state = state, navController = navController, homeViewModel = homeViewModel)
+    }
+}
+
+@Composable
+fun ConnectivityBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ){
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp),
+                tint = colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "No internet connection",
+                color = colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
     }
 }
 
@@ -80,6 +113,7 @@ fun Home (
     navController: NavController,
     homeViewModel: HomeViewModel
 ){
+    val isConnected by homeViewModel.isConnected.collectAsState(initial = true)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -87,12 +121,12 @@ fun Home (
     ) {
         HeaderImage(modifier = Modifier)
         Spacer(modifier = Modifier.padding(8.dp))
-        Text(
-            text = stringResource(id = R.string.home_header),
-            style = MaterialTheme.typography.headlineLarge,
-        )
-        Spacer(modifier = Modifier.padding(8.dp))
-        HomeOptions(modifier = Modifier)
+
+        if (!isConnected) {
+            ConnectivityBanner()
+        }
+
+        WelcomeCard(modifier = Modifier)
         Spacer(modifier = Modifier.padding(8.dp))
         Text(
             text = stringResource(id = R.string.home_common_places),
@@ -104,7 +138,44 @@ fun Home (
 
 }
 
+@Composable
+fun WelcomeCard(modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = colorScheme.onPrimary)
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = stringResource(R.string.welcome_to_queuehub),
+                style = MaterialTheme.typography.headlineLarge.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.primary
+                ),
+                textAlign = TextAlign.Center
+            )
 
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.join_virtual_queues),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
 
 @Composable
 fun HeaderImage(modifier: Modifier) {
@@ -239,12 +310,7 @@ fun CommonPlacesList(
 ) {
 
     val locationData by homeViewModel.locationData.collectAsState(initial = null)
-    val isConnected by homeViewModel.isConnected.collectAsState(initial = false)
-    Text(
-        text = if (isConnected) "Connected" else "Disconnected",
-        color = if (isConnected) androidx.compose.ui.graphics.Color.Green else androidx.compose.ui.graphics.Color.Red
-    )
-
+    val isConnected by homeViewModel.isConnected.collectAsState(initial = true)
     when (state) {
         is HomeViewState.Loading -> {
             CircularProgressIndicator()
@@ -252,11 +318,20 @@ fun CommonPlacesList(
         is HomeViewState.Success -> {
             if (state.commonPlaces.isEmpty()) {
 
-                Text(
-                    text = stringResource(R.string.home_no_common_places),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
+                if(!isConnected){
+                    Text(
+                        text = stringResource(R.string.check_your_network_connection),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }else{
+                    Text(
+                        text = stringResource(R.string.home_no_common_places),
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+
 
             } else {
                 LazyColumn(

@@ -36,4 +36,9 @@
     <string name="yes_cancel">Yes, cancel</string>
     <string name="keep_my_place">Keep my place</string>
     <string name="find_and_join_a_queue_to_start_tracking_your_turn">Find and join a queue to start tracking your turn</string>
+    <string name="home_description">\Join virtual queues and avoid long waits at your favorite places</string>
+    <string name="welcome_to_queuehub_">Welcome to QueueHub! Join virtual queues and avoid long waits at your favorite places</string>
+    <string name="join_virtual_queues">Join virtual queues and avoid long waits at your favorite places</string>
+    <string name="welcome_to_queuehub">Welcome to QueueHub!</string>
+    <string name="check_your_network_connection">Check your network connection :(</string>
 </resources>
