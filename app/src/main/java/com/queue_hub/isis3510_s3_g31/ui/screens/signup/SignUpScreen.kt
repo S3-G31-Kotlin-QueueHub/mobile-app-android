@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -183,12 +184,7 @@ fun SignUpButton(viewModel: SignUpViewModel, auth: FirebaseAuth, db: FirebaseFir
 @Composable
 fun PasswordField(placeholder: String, password: String, onTextFieldChange: (String) -> Unit) {
     var passwordVisible by remember { mutableStateOf(false) }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = password,
@@ -210,22 +206,17 @@ fun PasswordField(placeholder: String, password: String, onTextFieldChange: (Str
                 }
             },
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 @Composable
 fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = email,
@@ -236,22 +227,17 @@ fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 @Composable
 fun NameField(name: String, onTextFieldChange:(String) -> Unit ) {
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = name,
@@ -262,21 +248,16 @@ fun NameField(name: String, onTextFieldChange:(String) -> Unit ) {
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 @Composable
 fun PhoneField(phone: String, onTextFieldChange:(String) -> Unit ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = phone,
@@ -287,11 +268,11 @@ fun PhoneField(phone: String, onTextFieldChange:(String) -> Unit ) {
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 

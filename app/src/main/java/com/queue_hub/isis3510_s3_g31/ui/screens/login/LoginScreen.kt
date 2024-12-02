@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -47,32 +48,29 @@ import com.queue_hub.isis3510_s3_g31.ui.navigation.Main
 import com.queue_hub.isis3510_s3_g31.ui.navigation.SignUp
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: FirebaseAuth){
+fun LoginScreen(viewModel: LoginViewModel, navController: NavController, auth: FirebaseAuth) {
     val loginState by viewModel.loginState.observeAsState(LoginState.Idle)
+
     LaunchedEffect(loginState) {
-        when (loginState) {
-            is LoginState.Success -> {
-                navController.navigate(Main){
-                    popUpTo(navController.graph.startDestinationId) {
-                        inclusive = true
-                    }
-                }
+        if (loginState is LoginState.Success) {
+            navController.navigate(Main) {
+                popUpTo(navController.graph.startDestinationId) { inclusive = true }
             }
-            else -> {} // No hacer nada para otros estados
         }
     }
+
     Box(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(colorScheme.background)
+            .padding(20.dp)
     ) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-        ) {
-            Login(Modifier.align(Alignment.Center), viewModel, navController, loginState)
-        }
+        Login(
+            modifier = Modifier.align(Alignment.Center),
+            viewModel = viewModel,
+            navController = navController,
+            loginState = loginState
+        )
     }
 }
 
@@ -83,77 +81,59 @@ fun Login(
     navController: NavController,
     loginState: LoginState
 ) {
-
     val email: String by viewModel.email.observeAsState(initial = "")
     val password: String by viewModel.password.observeAsState(initial = "")
 
-
     Column(
+        modifier = modifier,
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
     ) {
         HeaderImage()
-        Spacer(modifier = Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
         Text(
             text = stringResource(id = R.string.header_text),
             style = MaterialTheme.typography.titleMedium,
         )
+
         when (loginState) {
-            is LoginState.Loading -> {
-                CircularProgressIndicator()
-            }
+            is LoginState.Loading -> CircularProgressIndicator()
             is LoginState.Error -> {
-                Spacer(modifier = Modifier.height(12.dp))
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Text(
-                        text = (loginState as LoginState.Error).message,
-                        color = colorScheme.error,
-                    )
-                }
-
-            }
-            else -> {}
-        }
-
-
-        Spacer(modifier = Modifier.padding(12.dp))
-        Card(
-            modifier = Modifier
-                .fillMaxWidth(),
-            elevation = CardDefaults.cardElevation(defaultElevation = 20.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = colorScheme.surface),
-            shape = RectangleShape
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 15.dp, vertical = 24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
                 Text(
-                    text = stringResource(id = R.string.login),
-                    style = MaterialTheme.typography.headlineLarge,
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    text = (loginState as LoginState.Error).message,
+                    color = colorScheme.error,
+                    modifier = Modifier.padding(vertical = 12.dp)
                 )
-                Spacer(modifier = Modifier.height(16.dp))
-                EmailField(email) { viewModel.onLoginChange(it, password) }
-                Spacer(modifier = Modifier.height(8.dp))
-                PasswordField(password) { viewModel.onLoginChange(email, it) }
-                Spacer(modifier = Modifier.height(24.dp))
-                LoginButton(viewModel)
             }
+            else -> Spacer(modifier = Modifier.height(12.dp))
         }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.Transparent)
+                .padding(horizontal = 15.dp, vertical = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(id = R.string.login),
+                style = MaterialTheme.typography.headlineLarge
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            EmailField(email) { viewModel.onLoginChange(it, password) }
+            Spacer(modifier = Modifier.height(8.dp))
+            PasswordField(password) { viewModel.onLoginChange(email, it) }
+            Spacer(modifier = Modifier.height(24.dp))
+            LoginButton(viewModel)
+        }
+
         Spacer(modifier = Modifier.height(24.dp))
         Text(
             text = stringResource(R.string.signUpText),
             style = MaterialTheme.typography.bodyLarge
         )
-        Spacer(modifier = Modifier.padding(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
         SignUpButton(navController)
     }
 }
@@ -191,63 +171,58 @@ fun SignUpButton(navController: NavController){
 @Composable
 fun PasswordField(password: String, onTextFieldChange: (String) -> Unit) {
     var passwordVisible by remember { mutableStateOf(false) }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
     TextField(
         value = password,
+        onValueChange = { onTextFieldChange(it) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color.Transparent),
         shape = RectangleShape,
-        onValueChange = {onTextFieldChange(it)},
-        modifier = Modifier.fillMaxWidth(),
-        placeholder = { Text(text= stringResource(id = R.string.password) )},
+        placeholder = { Text(text = stringResource(id = R.string.password)) },
         keyboardOptions = KeyboardOptions(
             keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done),
+            imeAction = ImeAction.Done
+        ),
         singleLine = true,
         maxLines = 1,
         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
         trailingIcon = {
             IconButton(onClick = { passwordVisible = !passwordVisible }) {
                 Icon(
-                    painter = if (passwordVisible) painterResource(id =  R.drawable.baseline_visibility_off_24) else painterResource(id = R.drawable.round_visibility_24),
-                    contentDescription = if (passwordVisible) "Ocultar contraseña" else "Mostrar contraseña"
+                    painter = if (passwordVisible)
+                        painterResource(id = R.drawable.baseline_visibility_off_24)
+                    else
+                        painterResource(id = R.drawable.round_visibility_24),
+                    contentDescription = if (passwordVisible) "Hide password" else "Show password"
                 )
             }
         },
         colors = TextFieldDefaults.colors(
-            unfocusedContainerColor = colorScheme.background,
-            focusedContainerColor = colorScheme.background,
+            unfocusedContainerColor =  Color.Transparent,
+            focusedContainerColor =  Color.Transparent,
         )
     )
-    }
 }
 
 @Composable
-fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
-    Card(
+fun EmailField(email: String, onTextFieldChange: (String) -> Unit) {
+    TextField(
+        value = email,
+        onValueChange = { onTextFieldChange(it) },
         modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
-        TextField(
-            shape = RectangleShape,
-            value = email,
-            onValueChange = { onTextFieldChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = { Text(text = stringResource(id = R.string.email)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-            singleLine = true,
-            maxLines = 1,
-            colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
-            )
+            .fillMaxWidth()
+            .background(Color.Transparent),
+        shape = RectangleShape,
+        placeholder = { Text(text = stringResource(id = R.string.email)) },
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+        singleLine = true,
+        maxLines = 1,
+        colors = TextFieldDefaults.colors(
+            unfocusedContainerColor = Color.Transparent,
+            focusedContainerColor = Color.Transparent,
         )
-    }
+    )
 }
 
 
