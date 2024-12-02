@@ -129,7 +129,11 @@ fun MainScreen(navController: NavController,
                     containerColor = colorScheme.onPrimary,
                     tonalElevation = 5.dp,
                 ) {
-                    navItemList.forEachIndexed { index, item ->
+
+                    var n = navItemList.size
+                    var item : BottomNavItem ? = null
+                    for (index in 0  until n){
+                        item = navItemList[index]
                         NavigationBarItem(
                             selected = selectedIndex == index,
                             onClick = {
