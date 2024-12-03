@@ -1,5 +1,6 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
 import android.app.Activity
+import android.content.Intent
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.ButtonDefaults
@@ -54,11 +55,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.queue_hub.isis3510_s3_g31.MapActivity
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
@@ -160,9 +163,15 @@ fun Buttons(
         ) {
             Text(text = if (queuedState) "Go to Home" else "Give me a turn.")
         }
-
+        val context = LocalContext.current
         Button(
             onClick = {
+
+                val intent = Intent(context, MapActivity::class.java)
+                context.startActivity(intent)
+
+
+
 
             },
             modifier = Modifier.fillMaxWidth(),

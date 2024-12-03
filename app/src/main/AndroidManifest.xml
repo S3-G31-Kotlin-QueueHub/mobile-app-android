@@ -21,6 +21,8 @@
         android:theme="@style/Theme.App.Starting"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity android:name=".MapActivity"
+            android:theme="@style/Theme.AppCompat.Light"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -47,5 +49,8 @@
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/queuehub" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBrgDX2LX3djeNKBsUslklQoN31Eg4nyT0" />
     </application>
 </manifest>
