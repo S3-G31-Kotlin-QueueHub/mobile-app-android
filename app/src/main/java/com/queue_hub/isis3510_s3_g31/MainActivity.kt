@@ -27,6 +27,7 @@ import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
+import com.queue_hub.isis3510_s3_g31.data.reviews.ReviewsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
@@ -47,6 +48,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var turnsRepository: TurnsRepository
     private lateinit var locationProvider: LocationProvider
     private lateinit var networkManager: NetworkManager
+    private lateinit var reviewsRepository: ReviewsRepository
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -75,6 +77,7 @@ class MainActivity : ComponentActivity() {
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
         turnsRepository = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
         queuesRepository = QueuesRepository()
+        reviewsRepository = ReviewsRepository(db = db)
         viewModel.checkAuthState(usersRepository)
         askNotificationPermission();
 
@@ -84,7 +87,8 @@ class MainActivity : ComponentActivity() {
             queuesRepository = queuesRepository,
             usersRepository = usersRepository,
             locationProvider = locationProvider,
-            networkManager = networkManager
+            networkManager = networkManager,
+            reviewsRepository = reviewsRepository
         )
 
 
