@@ -184,7 +184,7 @@ fun Buttons(
                 contentColor = Color.White
             )
         ) {
-            Text(text = if (!isConnected) "No internet connection" else if (queuedState) "See my actual turn" else "Give me a turn.${queuedState} ${isConnected}")
+            Text(text = if (!isConnected) "No internet connection" else if (queuedState) "See my actual turn" else "Give me a turn.")
         }
 
         Button(
@@ -343,19 +343,19 @@ fun ClickableVerticalOption(
 
             Text(
                 text = "Average Waiting Time: ${place.averageWaitingTime} min",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Best arrival time: ${place.bestAverageFrame}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "People on Queue: ${onQueue}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
