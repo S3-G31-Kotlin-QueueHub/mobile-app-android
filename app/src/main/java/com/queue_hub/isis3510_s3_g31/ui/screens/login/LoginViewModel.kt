@@ -5,14 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseAuth
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val usersRepository: UsersRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val dataLayerFacade: DataLayerFacade
 ): ViewModel() {
 
     private val _email = MutableLiveData<String>()
@@ -27,7 +28,14 @@ class LoginViewModel(
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
 
-    fun authenticateUsers(auth: FirebaseAuth) {
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
+    init {
+        checkInternetConnection()
+    }
+
+    fun authenticateUsers() {
         viewModelScope.launch {
             _loginState.value = LoginState.Loading
             val emailValue = _email.value.orEmpty()
@@ -46,23 +54,12 @@ class LoginViewModel(
                 }
             }else{
                 try {
-                    auth.signInWithEmailAndPassword(emailValue, passwordValue)
-                        .addOnCompleteListener{ task ->
-                            if (task.isSuccessful) {
-                                val user = auth.currentUser
-                                val userId = user?.uid ?: ""
-                                val email = user?.email ?: ""
-                                viewModelScope.launch {
-                                    userPreferencesRepository.saveUserData(email, userId)
-                                }
 
-                                _loginState.value = LoginState.Success
+                    dataLayerFacade.logIn(emailValue, passwordValue)
 
-                            } else {
-                                _loginState.value =
-                                    LoginState.Error("Your sign in credentials are incorrect, please check and try again")
-                            }
-                        }
+
+                } catch (e: FirebaseAuthInvalidCredentialsException) {
+                    _loginState.value = LoginState.Error("Your sign in credentials are incorrect, please check and try again")
                 } catch (e: Exception) {
                     _loginState.value = LoginState.Error("Authentication Error: ${e.message}")
                 }
@@ -81,6 +78,14 @@ class LoginViewModel(
     }
 
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+    private fun checkInternetConnection() {
+        viewModelScope.launch {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
+        }
+    }
 }
 
 sealed class LoginState {

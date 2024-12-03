@@ -1,58 +1,80 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
 
-import android.content.Context
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
-import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
-import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
-class DetailViewModel (private val placesRepository: PlacesRepository, private val userPreferencesRepository: UserPreferencesRepository, private val turnsRepository: TurnsRepository): ViewModel() {
+class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel() {
 
-    var state by mutableStateOf(DetailViewState())
-        private set
-    var userId by mutableStateOf<String?>("null")
-    private val _queued_state = MutableLiveData<Boolean>()
-    val queued_state: LiveData<Boolean> = _queued_state
+
+    val place = mutableStateOf(Place())
+    val isLoading = mutableStateOf(true)
+    val queuedState = mutableStateOf(false)
+    val activeTurn = mutableStateOf(false)
+    val onQueue = mutableStateOf(0)
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
+
+
 
     init {
+        checkInternetConnection()
+        getPlace()
+        getActiveTurn()
+    }
+
+    private fun getPlace() {
+        viewModelScope.launch(Dispatchers.IO) {
+            isLoading.value = true
+            val fetchedPlace = dataLayerFacade.getPlaceToDetail() ?: Place()
+            place.value = fetchedPlace
+
+
+            onQueue.value = dataLayerFacade.getTurnsNumberByUser(fetchedPlace.id)
+
+            isLoading.value = false // Desactiva la carga al finalizar
+        }
+    }
+
+
+    private fun getActiveTurn() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = dataLayerFacade.getIdUser()
+            dataLayerFacade.getTurn(userId)
+                .collect { turn ->
+                    val isActive = turn.status in listOf("waiting", "active") && turn.idUser.isNotEmpty()
+                    withContext(Dispatchers.Main) {
+                        activeTurn.value = isActive
+                    }
+                }
+        }
+    }
+
+
+    fun addTurn() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = dataLayerFacade.getIdUser()
+            val success = dataLayerFacade.addTurn(userId.orEmpty(), place.value.id)
+            queuedState.value = success
+        }
+    }
+    private fun checkInternetConnection() {
         viewModelScope.launch {
-            userId = userPreferencesRepository.userId.first()
-            state = state.copy(
-                place = getPlace(), onQueue = getPeopleOnQueue()
-            )
-            getActiveTurn()
-        };
-
-    }
-    suspend fun getActiveTurn() {
-        _queued_state.value = false
-
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
+        }
     }
 
-     suspend fun getPlace() : Place{
-
-            return placesRepository.getPlace()
-    }
-    suspend fun getPeopleOnQueue() : Int{
-
-        return turnsRepository.getTurnsLength(state.place.id)
-    }
-
-    suspend fun addTurn(){
-        _queued_state.value = turnsRepository.addTurn(userId.orEmpty(), state.place.id)
-    }
 }
 

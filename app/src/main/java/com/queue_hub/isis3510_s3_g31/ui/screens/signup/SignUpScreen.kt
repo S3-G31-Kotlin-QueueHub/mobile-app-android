@@ -5,12 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -25,6 +30,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -32,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -46,10 +53,13 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Login
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Main
+import com.queue_hub.isis3510_s3_g31.ui.screens.login.ConnectivityBanner
 
 @Composable
-fun SignUpScreen(viewModel: SignUpViewModel, navController: NavController, auth: FirebaseAuth, db: FirebaseFirestore){
+fun SignUpScreen(viewModel: SignUpViewModel, navController: NavController){
     val signUpState by viewModel.signUpState.observeAsState(SignUpState.Idle)
+
+
     LaunchedEffect(signUpState) {
         when (signUpState) {
             is SignUpState.Success -> {
@@ -63,6 +73,8 @@ fun SignUpScreen(viewModel: SignUpViewModel, navController: NavController, auth:
             else -> {} // No hacer nada para otros estados
         }
     }
+
+
     Box(
         Modifier
             .fillMaxSize()
@@ -74,7 +86,7 @@ fun SignUpScreen(viewModel: SignUpViewModel, navController: NavController, auth:
                 .fillMaxSize()
                 .padding(20.dp)
         ) {
-            SignUp(Modifier.align(Alignment.Center), viewModel, navController, signUpState, auth, db)
+            SignUp(Modifier.align(Alignment.Center), viewModel, navController, signUpState)
         }
     }
 }
@@ -84,9 +96,7 @@ fun SignUp(
     modifier: Modifier,
     viewModel: SignUpViewModel,
     navController: NavController,
-    signUpState: SignUpState,
-    auth: FirebaseAuth,
-    db: FirebaseFirestore
+    signUpState: SignUpState
 ) {
 
     val email: String by viewModel.email.observeAsState(initial = "")
@@ -94,7 +104,7 @@ fun SignUp(
     val passwordConfirmation: String by viewModel.passwordConfirmation.observeAsState(initial = "")
     val name: String by viewModel.name.observeAsState(initial = "")
     val phone: String by viewModel.phone.observeAsState(initial = "")
-
+    val isConnected by viewModel.isConnected.collectAsState(true)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -106,6 +116,11 @@ fun SignUp(
             text = stringResource(id = R.string.header_text),
             style = MaterialTheme.typography.titleMedium,
         )
+
+        if (!isConnected) {
+            Spacer(modifier = Modifier.height(12.dp))
+            ConnectivityBanner()
+        }
         when (signUpState) {
             is SignUpState.Loading -> {
                 CircularProgressIndicator()
@@ -136,7 +151,7 @@ fun SignUp(
         Spacer(modifier = Modifier.padding(4.dp))
         PasswordField(stringResource(id = R.string.confirm_password) , passwordConfirmation) { viewModel.onSignUpPasswordConfirmationChange(it) }
         Spacer(modifier = Modifier.padding(8.dp))
-        SignUpButton(viewModel, auth, db)
+        SignUpButton(viewModel)
 
         Spacer(modifier = Modifier.padding(16.dp))
         Text(
@@ -145,6 +160,38 @@ fun SignUp(
         )
         Spacer(modifier = Modifier.padding(8.dp))
         LoginButton(navController)
+    }
+}
+
+@Composable
+fun ConnectivityBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ){
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp),
+                tint = colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "No internet connection",
+                color = colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
     }
 }
 
@@ -166,10 +213,10 @@ fun LoginButton(navController: NavController) {
 
 
 @Composable
-fun SignUpButton(viewModel: SignUpViewModel, auth: FirebaseAuth, db: FirebaseFirestore){
+fun SignUpButton(viewModel: SignUpViewModel){
     Button(
         onClick = {
-            viewModel.signUp(auth, db)
+            viewModel.signUp()
         },
         modifier = Modifier.fillMaxWidth()
     ){
@@ -183,12 +230,7 @@ fun SignUpButton(viewModel: SignUpViewModel, auth: FirebaseAuth, db: FirebaseFir
 @Composable
 fun PasswordField(placeholder: String, password: String, onTextFieldChange: (String) -> Unit) {
     var passwordVisible by remember { mutableStateOf(false) }
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = password,
@@ -210,22 +252,17 @@ fun PasswordField(placeholder: String, password: String, onTextFieldChange: (Str
                 }
             },
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 @Composable
 fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = email,
@@ -236,22 +273,17 @@ fun EmailField(email: String, onTextFieldChange:(String) -> Unit ) {
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 @Composable
 fun NameField(name: String, onTextFieldChange:(String) -> Unit ) {
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = name,
@@ -262,21 +294,16 @@ fun NameField(name: String, onTextFieldChange:(String) -> Unit ) {
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 @Composable
 fun PhoneField(phone: String, onTextFieldChange:(String) -> Unit ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
-        shape = RectangleShape
-    ) {
+
         TextField(
             shape = RectangleShape,
             value = phone,
@@ -287,11 +314,11 @@ fun PhoneField(phone: String, onTextFieldChange:(String) -> Unit ) {
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.colors(
-                unfocusedContainerColor = colorScheme.background,
-                focusedContainerColor = colorScheme.background,
+                unfocusedContainerColor = Color.Transparent,
+                focusedContainerColor = Color.Transparent,
             )
         )
-    }
+
 }
 
 

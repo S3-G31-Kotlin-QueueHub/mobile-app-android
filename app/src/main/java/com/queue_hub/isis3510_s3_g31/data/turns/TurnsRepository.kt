@@ -1,6 +1,7 @@
 package com.queue_hub.isis3510_s3_g31.data.turns
 
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnDao
@@ -67,6 +68,14 @@ class TurnsRepository(
                 try {
 
                     if (snapshot.isEmpty) {
+                        trySend(Turn(
+                            idUser = "",
+                            idPlace = "",
+                            createdAt = Timestamp.now(),
+                            way = "",
+                            status = "",
+                            turnNumber = 99999999
+                        ))
                         return@addSnapshotListener
                     }
 
@@ -142,14 +151,21 @@ class TurnsRepository(
         }
     }
     suspend fun getTurnsLength(placeId: String): Int {
-        var turnsCount = 0
-
-
-
-
-
-        return turnsCount
+        println("Looking for queue of place "+ placeId)
+        return try {
+            val documentSnapshot = db.collection("queues").document(placeId).get().await()
+            if (documentSnapshot.exists()) {
+                val turnsList = documentSnapshot.get("turns") as? List<*>
+                turnsList?.size ?: 0
+            } else {
+                0
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
     }
+
 
 
 
@@ -171,7 +187,10 @@ class TurnsRepository(
                 try {
 
                     if (!snapshot.isEmpty) {
-                        for (document in snapshot.documents) {
+                        var document: DocumentSnapshot? = null
+                        var n = snapshot.documents.size
+                        for (i in 0 until n ){
+                            document = snapshot.documents[i]
                             val turnData = document.data
                             val turn = EndedTurn(
                                 idUser = turnData?.get("idUser") as? String ?: "",

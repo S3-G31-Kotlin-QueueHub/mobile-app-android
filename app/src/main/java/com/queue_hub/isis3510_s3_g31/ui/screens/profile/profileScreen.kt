@@ -32,7 +32,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,6 +62,7 @@ import com.queue_hub.isis3510_s3_g31.ui.navigation.Home
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Login
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.CommonPlaceCard
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
@@ -80,9 +86,30 @@ fun Profile (modifier: Modifier, navController: NavController, profileViewModel:
     ) {
         HeaderImage(modifier = Modifier, navController =navController, profileViewModel)
         Spacer(modifier = Modifier.padding(12.dp))
-        HomeOptions(modifier = Modifier, profileViewModel)
-        stats(modifier = Modifier, navController = navController, profileViewModel = profileViewModel)
+        var showContent by remember { mutableStateOf(false) }
 
+        LaunchedEffect(Unit) {
+            delay(500)
+            showContent = true
+        }
+
+        if (showContent) {
+            HomeOptions(modifier = Modifier, profileViewModel)
+            stats(
+                modifier = Modifier,
+                navController = navController,
+                profileViewModel = profileViewModel
+            )
+        }
+        else{
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                CircularProgressIndicator()
+            }
+        }
 
     }
 

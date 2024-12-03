@@ -1,9 +1,9 @@
 package com.queue_hub.isis3510_s3_g31
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.Manifest
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -22,28 +22,33 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDatabase
 import com.queue_hub.isis3510_s3_g31.data.places.remote.PlacesApi
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
+import com.queue_hub.isis3510_s3_g31.data.reviews.ReviewsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
-import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnDao
 import com.queue_hub.isis3510_s3_g31.data.turns.local.TurnsDatabase
 import com.queue_hub.isis3510_s3_g31.data.turns.remote.TurnApi
-import com.queue_hub.isis3510_s3_g31.data.users.UserPreferencesRepository
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
-import com.queue_hub.isis3510_s3_g31.data.users.remote.UserApi
 import com.queue_hub.isis3510_s3_g31.ui.navigation.AppNavigation
 import com.queue_hub.isis3510_s3_g31.ui.theme.ISIS3510S3G31Theme
+import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationProvider
+import com.queue_hub.isis3510_s3_g31.utils.network_services.AndroidNetworkManager
+import com.queue_hub.isis3510_s3_g31.utils.network_services.NetworkManager
 
 class MainActivity : ComponentActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var db: FirebaseFirestore
-    private lateinit var userPreferencesRepository: UserPreferencesRepository
+    private lateinit var usersRepository: UsersRepository
     private lateinit var placesRepository: PlacesRepository
     private lateinit var queuesRepository: QueuesRepository
-
+    private lateinit var turnsRepository: TurnsRepository
+    private lateinit var locationProvider: LocationProvider
+    private lateinit var networkManager: NetworkManager
+    private lateinit var reviewsRepository: ReviewsRepository
 
     private val viewModel by viewModels<MainViewModel>()
 
@@ -60,19 +65,31 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         auth = Firebase.auth
         db = Firebase.firestore
-        userPreferencesRepository = UserPreferencesRepository(applicationContext, db = db)
+
 
         val placesDb = Room.databaseBuilder(this, PlacesDatabase::class.java , name="places_db " ).build()
         val placesDAO = placesDb.dao
         val turnDb = Room.databaseBuilder(this, TurnsDatabase::class.java , name="turns" ).build()
         val turnDAO = turnDb.dao
+        networkManager = AndroidNetworkManager(this)
+        locationProvider = LocationProvider(this)
+        usersRepository = UsersRepository(applicationContext, db = db, auth = auth)
         placesRepository = PlacesRepository(placesDAO, api = PlacesApi.instance, db = db)
-        val repositoryUsers = UsersRepository(apiUsers = UserApi.instance2)
-        val repositoryTurns = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
-        queuesRepository = QueuesRepository(db)
+        turnsRepository = TurnsRepository(turnsApi = TurnApi.instance2, db, turnsDao =turnDAO )
+        queuesRepository = QueuesRepository()
+        reviewsRepository = ReviewsRepository(db = db)
+        viewModel.checkAuthState(usersRepository)
+        askNotificationPermission();
 
-        viewModel.checkAuthState(userPreferencesRepository)
-        askNotificationPermission()
+        val dataLayerFacade = DataLayerFacade(
+            placesRepository = placesRepository,
+            turnsRepository = turnsRepository,
+            queuesRepository = queuesRepository,
+            usersRepository = usersRepository,
+            locationProvider = locationProvider,
+            networkManager = networkManager,
+            reviewsRepository = reviewsRepository
+        )
 
 
         setContent {
@@ -82,12 +99,16 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(
                     startDestination = startDestination,
                     placesRepository = placesRepository,
-                    userRepository = repositoryUsers,
+                    userRepository = usersRepository,
                     auth = auth,
                     db = db,
-                    userPreferencesRepository = userPreferencesRepository,
-                    turnsRepository = repositoryTurns,
-                    queuesRepository = queuesRepository
+                    usersRepository = usersRepository,
+                    turnsRepository = turnsRepository,
+                    queuesRepository = queuesRepository,
+                    context = this,
+                    mainViewModel = viewModel,
+                    dataLayerFacade = dataLayerFacade,
+                    locationProvider = locationProvider
                 )
             }
         }

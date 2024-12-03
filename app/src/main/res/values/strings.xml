@@ -28,4 +28,17 @@
     <string name="go_to_the_place_and_take_your_order">Go to the place and take your order :)</string>
     <string name="understood">Understood</string>
     <string name="notification_fcm">notification_fcm</string>
+    <string name="you_are_not_in_any_queue_right_now">You are not in any queue right now</string>
+    <string name="you_haven_t_been_in_any_queue_yet">You haven\'t been in any queue yet</string>
+    <string name="your_turn">Your turn</string>
+    <string name="cancel">Cancel</string>
+    <string name="are_you_sure_you_want_to_cancel_your_turn">Are you sure you want to cancel your turn?</string>
+    <string name="yes_cancel">Yes, cancel</string>
+    <string name="keep_my_place">Keep my place</string>
+    <string name="find_and_join_a_queue_to_start_tracking_your_turn">Find and join a queue to start tracking your turn</string>
+    <string name="home_description">\Join virtual queues and avoid long waits at your favorite places</string>
+    <string name="welcome_to_queuehub_">Welcome to QueueHub! Join virtual queues and avoid long waits at your favorite places</string>
+    <string name="join_virtual_queues">Join virtual queues and avoid long waits at your favorite places</string>
+    <string name="welcome_to_queuehub">Welcome to QueueHub!</string>
+    <string name="check_your_network_connection">Check your network connection :(</string>
 </resources>
