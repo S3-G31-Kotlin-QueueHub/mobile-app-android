@@ -82,11 +82,13 @@ class DataLayerFacade(
         return networkManager.isConnected
     }
 
+    suspend fun logIn(email: String, password: String) {
+        return usersRepository.logIn(email, password)
+    }
 
-
-
-
-
+    suspend fun signUp(email: String, password: String, phone: String, name: String) {
+        return usersRepository.signUp(email, password, phone, name)
+    }
 
 
 }

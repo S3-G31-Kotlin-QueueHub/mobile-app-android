@@ -62,7 +62,7 @@ fun AppNavigation(
     ){
 
         composable<Login> {
-           LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController, auth = auth )
+           LoginScreen(viewModel = LoginViewModel(dataLayerFacade = dataLayerFacade) , navController = navController, auth = auth )
         }
         composable<Main> {
             MainScreen(navController = navController, placesRepository = placesRepository, usersRepository = usersRepository, turnsRepository = turnsRepository, queuesRepository = queuesRepository, context = context, locationProvider = LocationProvider(context), mainViewModel = mainViewModel, dataLayerFacade = dataLayerFacade )
@@ -77,7 +77,7 @@ fun AppNavigation(
             DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( dataLayerFacade), reviewViewModel = reviewViewModel)
         }
         composable<SignUp> {
-            SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, usersRepository = usersRepository), auth = auth, db = db)
+            SignUpScreen(navController = navController, viewModel = SignUpViewModel(dataLayerFacade = dataLayerFacade))
         }
         composable<Wait> {
             WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, usersRepository = usersRepository, queuesRepository = queuesRepository))
