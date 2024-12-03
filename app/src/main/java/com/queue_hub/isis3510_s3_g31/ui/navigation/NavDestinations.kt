@@ -25,3 +25,6 @@ object Wait
 
 @Serializable
 object Profile
+
+@Serializable
+object Review

@@ -25,6 +25,8 @@ import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.profile.ProfileViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.recommended.RecommendedViewModel
+import com.queue_hub.isis3510_s3_g31.ui.screens.review.ReviewScreen
+import com.queue_hub.isis3510_s3_g31.ui.screens.review.ReviewViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpScreen
 import com.queue_hub.isis3510_s3_g31.ui.screens.signup.SignUpViewModel
 import com.queue_hub.isis3510_s3_g31.ui.screens.wait.WaitScreen
@@ -49,6 +51,7 @@ fun AppNavigation(
 
     ) {
 
+    val reviewViewModel = ReviewViewModel(dataLayerFacade)
     val navController = rememberNavController()
 
     NavHost(
@@ -57,6 +60,7 @@ fun AppNavigation(
 
 
     ){
+
         composable<Login> {
            LoginScreen(viewModel = LoginViewModel(usersRepository = userRepository) , navController = navController, auth = auth )
         }
@@ -70,7 +74,7 @@ fun AppNavigation(
             RecommendedScreen(navController = navController, recommendedViewModel = RecommendedViewModel( dataLayerFacade ))
         }
         composable<Detail>{
-            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( dataLayerFacade))
+            DetailScreen(navController = navController, modifier = Modifier, detailViewModel = DetailViewModel( dataLayerFacade), reviewViewModel = reviewViewModel)
         }
         composable<SignUp> {
             SignUpScreen(navController = navController, viewModel = SignUpViewModel(auth = auth, usersRepository = usersRepository), auth = auth, db = db)
@@ -80,6 +84,9 @@ fun AppNavigation(
         }
         composable<Profile> {
             ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository))
+        }
+        composable<Review> {
+            ReviewScreen(navController = navController, reviewViewModel = reviewViewModel)
         }
 
     }

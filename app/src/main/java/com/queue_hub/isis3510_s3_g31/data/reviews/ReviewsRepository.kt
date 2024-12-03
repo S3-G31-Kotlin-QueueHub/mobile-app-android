@@ -6,6 +6,7 @@ import com.queue_hub.isis3510_s3_g31.data.reviews.model.Review
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -18,8 +19,10 @@ class ReviewsRepository(
 
 
     suspend fun getReviews(placeId: String): Flow<List<Review>> = callbackFlow {
+        println("GET REVIEWS PLACE ID: $placeId")
         val reviewsRef = db.collection("reviews").document(placeId)
 
+        println("REVIEWS REF: $reviewsRef")
 
         val reviewsSubscription = reviewsRef.addSnapshotListener { snapshot, error ->
             if (error != null) {
@@ -29,8 +32,10 @@ class ReviewsRepository(
             if (snapshot != null) {
                 launch (Dispatchers.IO){
                     try {
+
                         val reviewsData = snapshot.data?.get("reviews") as? List<Map<String, Any>>
 
+                        println("REVIEWS DATA: $reviewsData")
                         if(reviewsData == null){
                             trySend(emptyList())
                             return@launch
@@ -45,7 +50,7 @@ class ReviewsRepository(
                                     try {
                                         if(userDoc.exists()){
                                             Review(
-                                                score = reviewData["score"] as Int,
+                                                score = reviewData["score"] as Long,
                                                 comment = reviewData["comment"] as String,
                                                 userName = userDoc.getString("name") ?: "",
                                                 date = reviewData["date"] as Timestamp
@@ -68,11 +73,10 @@ class ReviewsRepository(
                     }
                 }
             }
-
-
-
         }
-
+        awaitClose {
+            reviewsSubscription.remove()
+        }
     }
 
 }

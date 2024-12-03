@@ -60,14 +60,16 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Review
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
+import com.queue_hub.isis3510_s3_g31.ui.screens.review.ReviewViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun DetailScreen(navController: NavController, modifier: Modifier, detailViewModel: DetailViewModel) {
+fun DetailScreen(navController: NavController, modifier: Modifier, detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
 
     Box(
         Modifier
@@ -79,13 +81,14 @@ fun DetailScreen(navController: NavController, modifier: Modifier, detailViewMod
         Detail(
             modifier = Modifier,
             navController = navController,
-            detailViewModel = detailViewModel
+            detailViewModel = detailViewModel,
+            reviewViewModel = reviewViewModel
         )
     }
 }
 
 @Composable
-fun Detail (modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel){
+fun Detail (modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -109,7 +112,7 @@ fun Detail (modifier: Modifier, navController: NavController, detailViewModel: D
         }
         if (showContent) {
         Spacer(modifier = Modifier.padding(8.dp))
-        HomeOptions(modifier = Modifier, detailViewModel)
+        HomeOptions(modifier = Modifier, detailViewModel, reviewViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
         Buttons(modifier, navController, detailViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
@@ -163,7 +166,7 @@ fun Buttons(
 
         Button(
             onClick = {
-
+                navController.navigate(Review)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
@@ -209,7 +212,7 @@ fun HeaderImage(modifier: Modifier, navController: NavController) {
 
 
 @Composable
-fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
+fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
     Column(
 
         modifier = modifier.fillMaxWidth()
@@ -229,7 +232,8 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 
 
                 modifier = Modifier.weight(1f),
-                detailViewModel
+                detailViewModel,
+                reviewViewModel
 
             )
 
@@ -249,10 +253,13 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 fun ClickableVerticalOption(
 
     modifier: Modifier,
-    detailViewModel: DetailViewModel
+    detailViewModel: DetailViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     val onQueue = detailViewModel.onQueue.value
     val place = detailViewModel.place.value
+    reviewViewModel.onPlaceIdChange(place.id)
+
     Card(
         modifier = modifier
             .padding(8.dp)
