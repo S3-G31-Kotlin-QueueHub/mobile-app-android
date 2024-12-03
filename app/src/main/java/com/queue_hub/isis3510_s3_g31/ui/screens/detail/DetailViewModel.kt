@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel() {
 
@@ -18,19 +19,27 @@ class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel(
     val place = mutableStateOf(Place())
     val isLoading = mutableStateOf(true)
     val queuedState = mutableStateOf(false)
+    val activeTurn = mutableStateOf(false)
     val onQueue = mutableStateOf(0)
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
+
+
 
     init {
+        checkInternetConnection()
         getPlace()
+        getActiveTurn()
     }
 
     private fun getPlace() {
         viewModelScope.launch(Dispatchers.IO) {
-            isLoading.value = true // Activa la carga al iniciar la operación
+            isLoading.value = true
             val fetchedPlace = dataLayerFacade.getPlaceToDetail() ?: Place()
             place.value = fetchedPlace
 
-            // Actualizar información adicional
+
             onQueue.value = dataLayerFacade.getTurnsNumberByUser(fetchedPlace.id)
 
             isLoading.value = false // Desactiva la carga al finalizar
@@ -38,10 +47,20 @@ class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel(
     }
 
 
-    //    private  fun getActiveTurn() {
-//        _queuedState.value = true
-//    }
-//
+    private fun getActiveTurn() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val userId = dataLayerFacade.getIdUser()
+            dataLayerFacade.getTurn(userId)
+                .collect { turn ->
+                    val isActive = turn.status in listOf("waiting", "active") && turn.idUser.isNotEmpty()
+                    withContext(Dispatchers.Main) {
+                        activeTurn.value = isActive
+                    }
+                }
+        }
+    }
+
+
     fun addTurn() {
         viewModelScope.launch(Dispatchers.IO) {
             val userId = dataLayerFacade.getIdUser()
@@ -49,5 +68,13 @@ class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel(
             queuedState.value = success
         }
     }
+    private fun checkInternetConnection() {
+        viewModelScope.launch {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
+        }
+    }
+
 }
 

@@ -1,5 +1,6 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
 import android.app.Activity
+import android.widget.Toast
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.ButtonDefaults
@@ -25,6 +26,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -65,6 +67,7 @@ import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
 import com.queue_hub.isis3510_s3_g31.ui.screens.review.ReviewViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
+import com.queue_hub.isis3510_s3_g31.ui.theme.Pink40
 import kotlinx.coroutines.delay
 
 
@@ -135,33 +138,53 @@ fun Buttons(
     navController: NavController,
     detailViewModel: DetailViewModel
 ) {
+    val context = LocalContext.current
+    val queuedState = detailViewModel.activeTurn.value
+    val isConnected by detailViewModel.isConnected.collectAsState(initial = false)
 
-    val queuedState = detailViewModel.queuedState.value
+    LaunchedEffect(isConnected) {
+        if (!isConnected) {
+
+            Toast.makeText(context, "No hay conexión a internet", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
+        val context = LocalContext.current
         Button(
             onClick = {
-                if (!queuedState) {
+                if (!isConnected){
+                    Toast.makeText(context, "There is not internet connection.", Toast.LENGTH_SHORT).show()
+
+                }
+                else if (!queuedState) {
                     detailViewModel.addTurn()
                     navController.navigate(Wait) {
                         popUpTo(navController.graph.startDestinationId) {
                             inclusive = true
                         }
                     }
-                } else {
-                    navController.navigate(Home)
+
                 }
+                else{
+                    navController.navigate(Wait) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                }
+
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = DarkGreen,
+                containerColor = if (isConnected && !queuedState ) DarkGreen else if (!isConnected)  Pink40 else Color.Gray,
                 contentColor = Color.White
             )
         ) {
-            Text(text = if (queuedState) "Go to Home" else "Give me a turn.")
+            Text(text = if (!isConnected) "No internet connection" else if (queuedState) "See my actual turn" else "Give me a turn.")
         }
 
         Button(
@@ -258,6 +281,7 @@ fun ClickableVerticalOption(
 ) {
     val onQueue = detailViewModel.onQueue.value
     val place = detailViewModel.place.value
+    val queuedState = detailViewModel.activeTurn.value
     reviewViewModel.onPlaceIdChange(place.id)
 
     Card(
@@ -316,26 +340,28 @@ fun ClickableVerticalOption(
 
 
         ) {
+
             Text(
                 text = "Average Waiting Time: ${place.averageWaitingTime} min",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Best arrival time: ${place.bestAverageFrame}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "People on Queue: ${onQueue}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
 
         }
     }
+
 }
 
