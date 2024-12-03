@@ -137,6 +137,11 @@ fun Buttons(
 ) {
 
     val queuedState = detailViewModel.queuedState.value
+    val place = detailViewModel.place.value
+
+    val lat = detailViewModel.lat.value
+
+    val lon = detailViewModel.lon.value
 
     Column(
         modifier = modifier
@@ -167,11 +172,7 @@ fun Buttons(
         Button(
             onClick = {
 
-                val intent = Intent(context, MapActivity::class.java)
-                context.startActivity(intent)
-
-
-
+               
 
             },
             modifier = Modifier.fillMaxWidth(),

@@ -51,6 +51,7 @@
             android:resource="@drawable/queuehub" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBrgDX2LX3djeNKBsUslklQoN31Eg4nyT0" />
+            android:value="AIzaSyCJmZhb_UjWR6n4zN1ImaJOc90VYHza0uA"/>
+
     </application>
 </manifest>
