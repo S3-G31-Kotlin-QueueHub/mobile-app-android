@@ -6,6 +6,8 @@ import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.queues.QueuesRepository
 import com.queue_hub.isis3510_s3_g31.data.queues.model.PreviousQueue
 import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
+import com.queue_hub.isis3510_s3_g31.data.reviews.ReviewsRepository
+import com.queue_hub.isis3510_s3_g31.data.reviews.model.Review
 import com.queue_hub.isis3510_s3_g31.data.turns.TurnsRepository
 import com.queue_hub.isis3510_s3_g31.data.turns.model.Turn
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
@@ -21,7 +23,8 @@ class DataLayerFacade(
     private val queuesRepository: QueuesRepository,
     private val usersRepository: UsersRepository,
     private val locationProvider: LocationProvider,
-    private val networkManager: NetworkManager
+    private val networkManager: NetworkManager,
+    private val reviewsRepository: ReviewsRepository
     ) {
 
     suspend fun setPlaceToDetail(idPlace: String) {
@@ -67,6 +70,10 @@ class DataLayerFacade(
         return turnsRepository.cancelTurn(idUser)
     }
 
+    suspend fun getReviews(idPlace: String): Flow<List<Review>> {
+        return reviewsRepository.getReviews(idPlace)
+    }
+    
     suspend fun requestLocationUpdates(): Flow<LocationData> {
         return locationProvider.requestLocationUpdates()
     }
