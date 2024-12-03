@@ -6,11 +6,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val usersRepository: UsersRepository
+    private val dataLayerFacade: DataLayerFacade
 ): ViewModel() {
 
     private val _email = MutableLiveData<String>()
@@ -24,6 +27,13 @@ class LoginViewModel(
 
     private val _loginState = MutableLiveData<LoginState>()
     val loginState: LiveData<LoginState> = _loginState
+
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
+    init {
+        checkInternetConnection()
+    }
 
     fun authenticateUsers() {
         viewModelScope.launch {
@@ -45,7 +55,7 @@ class LoginViewModel(
             }else{
                 try {
 
-                    usersRepository.logIn(emailValue, passwordValue)
+                    dataLayerFacade.logIn(emailValue, passwordValue)
 
 
                 } catch (e: FirebaseAuthInvalidCredentialsException) {
@@ -68,6 +78,14 @@ class LoginViewModel(
     }
 
     private fun isValidEmail(email: String): Boolean = Patterns.EMAIL_ADDRESS.matcher(email).matches()
+
+    private fun checkInternetConnection() {
+        viewModelScope.launch {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
+        }
+    }
 }
 
 sealed class LoginState {
