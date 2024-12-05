@@ -2,6 +2,7 @@ package com.queue_hub.isis3510_s3_g31.ui.screens.review
 
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -43,6 +48,8 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.reviews.model.Review
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Composable
 fun ReviewScreen(
@@ -51,17 +58,24 @@ fun ReviewScreen(
 ) {
     val reviewState by reviewViewModel.reviewState.collectAsState()
     val placeState by reviewViewModel.placeState.collectAsState()
+
     Box(
         Modifier.fillMaxSize()
-            .padding(20.dp)
+            .background(colorScheme.background)
     ){
-        Review(
-            modifier = Modifier.fillMaxSize(),
-            viewModel = reviewViewModel,
-            navController = navController,
-            reviewState = reviewState,
-            placeState = placeState
-        )
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(start = 16.dp, top = 16.dp, end = 16.dp)
+        ) {
+            Review(
+                modifier = Modifier.fillMaxSize(),
+                viewModel = reviewViewModel,
+                navController = navController,
+                reviewState = reviewState,
+                placeState = placeState
+            )
+        }
     }
 
 }
@@ -224,6 +238,9 @@ fun ReviewList(reviewState: ReviewViewState<List<Review>>) {
     when (reviewState) {
         is ReviewViewState.Success -> {
             val reviews = reviewState.data
+
+            println("REVIEWS VIEW $reviews")
+
             if (reviews.isEmpty()) {
                 Text(
                     text = "No reviews yet",
@@ -260,9 +277,6 @@ fun ReviewList(reviewState: ReviewViewState<List<Review>>) {
     }
 }
 
-
-
-
 @Composable
 fun ReviewCard(review: Review) {
     Card(
@@ -275,35 +289,69 @@ fun ReviewCard(review: Review) {
         colors = CardDefaults.cardColors(containerColor = colorScheme.onPrimary)
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.SpaceBetween,
+            Box(
                 modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp)
+                    .size(48.dp)
+                    .background(colorScheme.primary.copy(alpha = 0.2f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = review.userName.first().uppercase(),
+                    style = MaterialTheme.typography.headlineSmall,
+                    color = colorScheme.primary
+                )
+            }
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column(
+                modifier = Modifier.weight(1f),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = review.userName,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                     color = colorScheme.primary
                 )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
+                ) {
+                    repeat(5) { index ->
+                        Icon(
+                            imageVector = if (index < review.score) Icons.Filled.Star else Icons.Outlined.Star,
+                            contentDescription = "Star",
+                            tint = if (index < review.score) colorScheme.primary else colorScheme.onSurfaceVariant.copy(alpha = 0.4f),
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+
                 Text(
                     text = review.comment,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = colorScheme.onSurfaceVariant
+                    color = colorScheme.onSurface
+                )
+
+
+                Text(
+                    text = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault()).format(review.date.toDate()),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                    modifier = Modifier.align(Alignment.End)
                 )
             }
         }
     }
 }
+
+
+
+
+
 
 
 

@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class ReviewsRepository(
     private val db: FirebaseFirestore
@@ -65,7 +66,10 @@ class ReviewsRepository(
                             }.awaitAll().filterNotNull()
                         }
 
-                        val sortedReviews = reviews.sortedByDescending { it.date }
+                        val sortedReviews = withContext(Dispatchers.Default) {
+                            reviews.sortedByDescending { it.date }
+                        }
+
                         trySend(sortedReviews)
 
                     } catch (e: Exception) {

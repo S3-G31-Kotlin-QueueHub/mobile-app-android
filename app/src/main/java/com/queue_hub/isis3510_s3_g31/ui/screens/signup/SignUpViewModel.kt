@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -56,7 +57,7 @@ class SignUpViewModel(
     }
 
     fun signUp() {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO) {
             _signUpState.value = SignUpState.Loading
             try {
 

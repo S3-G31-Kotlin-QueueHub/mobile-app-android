@@ -7,6 +7,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -74,20 +75,27 @@ import kotlinx.coroutines.delay
 @Composable
 fun DetailScreen(navController: NavController, modifier: Modifier, detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
 
-    Box(
+    Box (
         Modifier
             .fillMaxSize()
-            .padding(20.dp)
-    ) {
+            .background(colorScheme.background)
+    ){
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+        ) {
 
 
-        Detail(
-            modifier = Modifier,
-            navController = navController,
-            detailViewModel = detailViewModel,
-            reviewViewModel = reviewViewModel
-        )
+            Detail(
+                modifier = Modifier,
+                navController = navController,
+                detailViewModel = detailViewModel,
+                reviewViewModel = reviewViewModel
+            )
+        }
     }
+
 }
 
 @Composable
