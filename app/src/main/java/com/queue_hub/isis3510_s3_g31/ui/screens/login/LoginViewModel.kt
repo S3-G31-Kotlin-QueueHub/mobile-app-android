@@ -61,7 +61,7 @@ class LoginViewModel(
                 } catch (e: FirebaseAuthInvalidCredentialsException) {
                     _loginState.value = LoginState.Error("Your sign in credentials are incorrect, please check and try again")
                 } catch (e: Exception) {
-                    _loginState.value = LoginState.Error("Authentication Error: ${e.message}")
+                    _loginState.value = LoginState.Error("Please check your internet connection and try again")
                 }
             }
         }

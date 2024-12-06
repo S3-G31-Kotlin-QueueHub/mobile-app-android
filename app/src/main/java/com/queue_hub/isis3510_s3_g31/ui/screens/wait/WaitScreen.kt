@@ -42,6 +42,7 @@ import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
 import com.queue_hub.isis3510_s3_g31.data.turns.model.Turn
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Main
+import com.queue_hub.isis3510_s3_g31.ui.screens.login.ConnectivityBanner
 
 
 @Composable
@@ -70,6 +71,7 @@ fun Wait (
     state: WaitViewState,
     waitViewModel: WaitViewModel
 ){
+    val isConnected by waitViewModel.isConnected.collectAsState(true)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -77,6 +79,10 @@ fun Wait (
     ) {
         HeaderImage(modifier = Modifier, navController = navController )
         Spacer(modifier = Modifier.padding(16.dp))
+        if (!isConnected) {
+            Spacer(modifier = Modifier.height(12.dp))
+            ConnectivityBanner()
+        }
         WaitCard(modifier = Modifier, navController = navController, state = state, waitViewModel = waitViewModel)
         Spacer(modifier = Modifier.padding(16.dp))
     }
@@ -127,7 +133,7 @@ fun WaitCard(
             val queue = state.queue
 
             if(queue.currentTurnNumber == turn.turnNumber){
-                TurnInformation(navController = navController, modifier = modifier, turn = turn, queue = queue)
+                TurnInformation(navController = navController, modifier = modifier)
             }else{
                 WaitInformation(navController = navController, modifier = modifier, turn = turn, queue = queue, waitViewModel = waitViewModel)
             }
@@ -143,6 +149,7 @@ fun WaitCard(
 
 @Composable
 fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn, queue: Queue, waitViewModel: WaitViewModel){
+    val isConnected by waitViewModel.isConnected.collectAsState(true)
     Card(
         modifier = modifier
             .padding(8.dp)
@@ -178,38 +185,35 @@ fun WaitInformation(navController: NavController, modifier: Modifier, turn: Turn
                 fontWeight = FontWeight.Bold
             )
             TurnNumber(number = queue.currentTurnNumber, modifier = Modifier)
-            Text(
-                text = stringResource(R.string.the_approximated_waiting_time_is),
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "20 min",
-                style = MaterialTheme.typography.headlineSmall,
-                textAlign = TextAlign.Center,
-                fontWeight = FontWeight.Bold,
-                color = colorScheme.secondary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    waitViewModel.cancelTurn()
-                    navController.navigate(Main)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-            ){
+            if (!isConnected) {
                 Text(
-                    text = stringResource(R.string.i_don_t_need_it_anymore)
+                    text = "No internet connection, please go to the place and ask for your turn",
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold,
+                    color = colorScheme.error
                 )
+            }else{
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        waitViewModel.cancelTurn()
+                        navController.navigate(Main)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ){
+                    Text(
+                        text = stringResource(R.string.i_don_t_need_it_anymore)
+                    )
+                }
             }
         }
     }
 }
 
 @Composable
-fun TurnInformation(navController: NavController, modifier: Modifier, turn: Turn, queue: Queue){
+fun TurnInformation(navController: NavController, modifier: Modifier){
     Card(
         modifier = modifier
             .padding(8.dp)
@@ -224,6 +228,7 @@ fun TurnInformation(navController: NavController, modifier: Modifier, turn: Turn
                 .padding(16.dp)
         ) {
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = stringResource(R.string.thank_you_for_being_patient),
                 style = MaterialTheme.typography.headlineSmall,

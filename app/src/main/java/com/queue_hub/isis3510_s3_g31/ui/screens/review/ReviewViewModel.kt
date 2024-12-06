@@ -22,6 +22,13 @@ class ReviewViewModel(
 
     private val _idPlace = MutableStateFlow("")
 
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
+    init {
+        checkInternetConnection()
+    }
+
     fun onPlaceIdChange(idPlace: String) {
 
         if(idPlace.isEmpty()){
@@ -51,6 +58,14 @@ class ReviewViewModel(
                 _reviewState.value = ReviewViewState.Loading()
             }
 
+        }
+    }
+
+    private fun checkInternetConnection() {
+        viewModelScope.launch (Dispatchers.IO) {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
         }
     }
 

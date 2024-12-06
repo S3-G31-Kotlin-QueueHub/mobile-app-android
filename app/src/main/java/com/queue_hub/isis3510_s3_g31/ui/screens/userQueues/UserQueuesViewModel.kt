@@ -31,10 +31,13 @@ class UserQueuesViewModel(
     private val _showCancelDialog = MutableStateFlow(false)
     val showCancelDialog: StateFlow<Boolean> = _showCancelDialog
 
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
 
     init {
         getUserQueues()
         initializeTurnAndQueue()
+        checkInternetConnection()
     }
 
     private fun initializeTurnAndQueue() {
@@ -87,6 +90,14 @@ class UserQueuesViewModel(
 
     fun hideCancelDialog() {
         _showCancelDialog.value = false
+    }
+
+    private fun checkInternetConnection() {
+        viewModelScope.launch (Dispatchers.IO) {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
+        }
     }
 
 }

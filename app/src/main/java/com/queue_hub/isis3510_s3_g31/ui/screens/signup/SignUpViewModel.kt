@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -91,7 +92,7 @@ class SignUpViewModel(
                 val errorMessage = when {
                     e.message?.contains("email", ignoreCase = true) == true ->
                         "This email has already register, please sign in or try with a different email."
-                    else -> "Error during sign up: ${e.message}"
+                    else -> "Please check your internet connection and try again"
                 }
                 _signUpState.value = SignUpState.Error(errorMessage)
                 Log.e(TAG, "Error en signUp", e)
