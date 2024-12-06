@@ -1,21 +1,13 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.recommended
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
-import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
-import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewState
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class RecommendedViewModel ( private val dataLayerFacade: DataLayerFacade): ViewModel() {
@@ -32,17 +24,16 @@ class RecommendedViewModel ( private val dataLayerFacade: DataLayerFacade): View
 
         viewModelScope.launch (Dispatchers.IO){
             val allPlaces : List<Place> = dataLayerFacade.getAllPlaces()
-            val n = allPlaces.size
-            var place: Place? = null
-            for (i in 0 until n) {
-                place = allPlaces[i]
-                Log.d("DatosPlaces", "Place vm: $place")
+            var isConnectedCheck : Boolean = false
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                    isConnectedCheck = isConnected
+                    state = state.copy(
+                    places = allPlaces,
+                    isLoading = false,
+                    selectedCategory = RecommendedCategory.ALL,
+                    isConnected = isConnectedCheck
+                    )
             }
-            state = state.copy(
-                places = allPlaces,
-                isLoading = false,
-                selectedCategory = RecommendedCategory.ALL
-            )
         }
     }
 
@@ -80,6 +71,7 @@ class RecommendedViewModel ( private val dataLayerFacade: DataLayerFacade): View
 
         }
     }
+
 
 }
 

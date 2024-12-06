@@ -22,6 +22,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -55,6 +56,7 @@ import com.queue_hub.isis3510_s3_g31.data.places.mapper.toPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.CommonPlaceCard
+import com.queue_hub.isis3510_s3_g31.ui.screens.login.ConnectivityBanner
 
 
 @Composable
@@ -63,26 +65,44 @@ fun RecommendedScreen(
     recommendedViewModel: RecommendedViewModel
 ){
     val state = recommendedViewModel.state
+    Box(
+        Modifier
+            .fillMaxSize()
+            .padding(20.dp)
+    ) {
 
-    if (state.isLoading) {
-        Column (
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+        Recommended(modifier = Modifier, state = state, navController = navController, recommendedViewModel = recommendedViewModel)
+    }
+
+}
+@Composable
+fun ConnectivityBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
         ){
-            CircularProgressIndicator()
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp),
+                tint = colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "No internet connection",
+                color = colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
         }
-
-    } else {
-
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(20.dp)
-        ) {
-            Recommended(modifier = Modifier, state = state, navController = navController, recommendedViewModel = recommendedViewModel)
-        }
-
 
     }
 }
@@ -102,7 +122,10 @@ fun Recommended (modifier: Modifier, state: RecommendedViewState, navController:
         )
         Spacer(modifier = Modifier.padding(8.dp))
 
-        // TO DO
+        if(!state.isConnected){
+            Spacer(modifier = Modifier.height(12.dp))
+            ConnectivityBanner()
+        }
 
         Row(modifier = Modifier
             .horizontalScroll(rememberScrollState())
@@ -129,7 +152,19 @@ fun Recommended (modifier: Modifier, state: RecommendedViewState, navController:
 
 
         Spacer(modifier = Modifier.padding(8.dp))
-        RecommendedPlacesList(modifier = Modifier, places = state.places, state = state, navController = navController, recommendedViewModel)
+        if (state.isLoading) {
+            Column (
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ){
+                CircularProgressIndicator()
+            }
+
+        }else{
+            RecommendedPlacesList(modifier = Modifier, places = state.places, state = state, navController = navController, recommendedViewModel)
+        }
+
     }
 }
 
