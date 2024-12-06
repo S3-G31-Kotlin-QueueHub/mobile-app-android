@@ -1,5 +1,6 @@
 package com.queue_hub.isis3510_s3_g31.data
 
+import com.queue_hub.isis3510_s3_g31.data.clusters.Cluster
 import com.queue_hub.isis3510_s3_g31.data.places.PlacesRepository
 import com.queue_hub.isis3510_s3_g31.data.places.model.CommonPlace
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
@@ -28,6 +29,9 @@ class DataLayerFacade(
     private val reviewsRepository: ReviewsRepository
     ) {
 
+    suspend fun getClusters():Flow<List<Cluster>>{
+       return placesRepository.getClusters()
+    }
     suspend fun setPlaceToDetail(idPlace: String) {
         this.placesRepository.setPlace(idPlace)
     }
@@ -53,6 +57,7 @@ class DataLayerFacade(
     suspend fun getCommonPlaces(idUser: String): Flow<List<CommonPlace>> {
         return placesRepository.getCommonPlaces(idUser)
     }
+
 
     suspend fun getQueue(idPlace: String): Flow<Queue> {
         return queuesRepository.getQueue(idPlace)
@@ -94,6 +99,8 @@ class DataLayerFacade(
     suspend fun userId(): Flow<String> {
         return usersRepository.userId
     }
+
+
 
 
 

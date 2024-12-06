@@ -27,6 +27,9 @@ class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel(
 
 
 
+    val lat = mutableStateOf(0.0)
+    val lon =  mutableStateOf(0.0)
+
     init {
         checkInternetConnection()
         getPlace()
@@ -38,11 +41,23 @@ class DetailViewModel(private val dataLayerFacade: DataLayerFacade) : ViewModel(
             isLoading.value = true
             val fetchedPlace = dataLayerFacade.getPlaceToDetail() ?: Place()
             place.value = fetchedPlace
+            val localization = place.value.localization
+            try {
+                val coordinates = localization.split(", ")
+                lat.value = coordinates[0].trim().toDouble()
+                lon.value = coordinates[1].trim().toDouble()
 
 
+
+                println("Latitud: $lat, Longitud: $lon")
+            } catch (e: Exception) {
+
+                println("Error: Localization data is not in the expected format $localization\"")
+                e.printStackTrace()
+            }
             onQueue.value = dataLayerFacade.getTurnsNumberByUser(fetchedPlace.id)
 
-            isLoading.value = false // Desactiva la carga al finalizar
+            isLoading.value = false
         }
     }
 

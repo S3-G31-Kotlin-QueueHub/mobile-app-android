@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +62,7 @@ import com.queue_hub.isis3510_s3_g31.ui.navigation.Detail
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Home
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Login
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.CommonPlaceCard
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.ConnectivityBanner
 import com.queue_hub.isis3510_s3_g31.ui.screens.home.HomeViewState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -84,7 +86,11 @@ fun Profile (modifier: Modifier, navController: NavController, profileViewModel:
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+        val isConnected by profileViewModel.isConnected.collectAsState(initial = false)
         HeaderImage(modifier = Modifier, navController =navController, profileViewModel)
+        if (!isConnected) {
+            ConnectivityBanner()
+        }
         Spacer(modifier = Modifier.padding(12.dp))
         var showContent by remember { mutableStateOf(false) }
 
@@ -250,7 +256,7 @@ fun ClickableVerticalOption(
             )
 
             Text(
-                text = "Numero de filas hechas: " + profileViewModel.state.turns.size.toString(),
+                text = "Numero de filas hechas: " + profileViewModel.turns.value,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )

@@ -83,7 +83,7 @@ fun AppNavigation(
             WaitScreen(navController = navController, waitViewModel = WaitViewModel(dataLayerFacade = dataLayerFacade))
         }
         composable<Profile> {
-            ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository))
+            ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository, dataLayerFacade))
         }
         composable<Review> {
             ReviewScreen(navController = navController, reviewViewModel = reviewViewModel)
