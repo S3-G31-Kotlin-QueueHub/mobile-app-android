@@ -24,18 +24,20 @@ class ProfileViewModel (private val placesRepository: PlacesRepository, private 
     var state by mutableStateOf(ProfileViewState())
         private set
 
-    var turns by mutableStateOf(emptyList<EndedTurn>())
+    var turns  =  mutableStateOf(0)
 
 
     init {
         viewModelScope.launch {
             usersRepository.getUserData();
+
             state = state.copy(
                 id = usersRepository.userId.first(),
                 name = usersRepository.name.first(),
                 email = usersRepository.email.first(),
-                turns = getTurnsByUser()
+
             )
+            getTurnsByUser()
         }
     }
 
@@ -45,16 +47,17 @@ class ProfileViewModel (private val placesRepository: PlacesRepository, private 
         usersRepository.clearUserData()
     }
 
-    fun getTurnsByUser():List<EndedTurn>{
-        val endedTurnsList = mutableListOf<EndedTurn>()
-        CoroutineScope(Dispatchers.IO).launch {
+    fun getTurnsByUser(){
+
+        viewModelScope.launch(Dispatchers.IO) {
+            println("BUSCARE PARA EL USUARIO: " + state.id)
             turnsRepository.getAllTurnsOfUser(state.id).collect { list ->
-                endedTurnsList.addAll(list)
-                turns = endedTurnsList;
+
+                turns.value = list.size;
             }
         }
 
-        return endedTurnsList
+
     }
 
 

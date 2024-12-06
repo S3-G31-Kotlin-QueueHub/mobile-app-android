@@ -250,7 +250,7 @@ fun ClickableVerticalOption(
             )
 
             Text(
-                text = "Numero de filas hechas: " + profileViewModel.state.turns.size.toString(),
+                text = "Numero de filas hechas: " + profileViewModel.turns.value,
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center
             )

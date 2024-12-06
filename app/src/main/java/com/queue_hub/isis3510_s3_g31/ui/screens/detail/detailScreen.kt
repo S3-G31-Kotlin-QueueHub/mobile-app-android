@@ -68,6 +68,7 @@ import com.queue_hub.isis3510_s3_g31.MapActivity
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Review
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.ConnectivityBanner
 import com.queue_hub.isis3510_s3_g31.ui.screens.review.ReviewViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
@@ -109,8 +110,11 @@ fun Detail (modifier: Modifier, navController: NavController, detailViewModel: D
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
     ) {
+        val isConnected by detailViewModel.isConnected.collectAsState(initial = false)
         HeaderImage(modifier = Modifier, navController =navController)
-
+        if (!isConnected) {
+            ConnectivityBanner()
+        }
         Spacer(modifier = Modifier.padding(8.dp))
 
         val isLoading = detailViewModel.isLoading.value
@@ -201,14 +205,26 @@ fun Buttons(
         ) {
             Text(text = if (!isConnected) "No internet connection" else if (queuedState) "See my actual turn" else "Give me a turn.")
         }
-
+        if (isConnected) {
+            Button(
+                onClick = {
+                    val intent = Intent(context, MapActivity::class.java)
+                    intent.putExtra("latitude", lat)
+                    intent.putExtra("longitude", lon)
+                    intent.putExtra("name", place.name)
+                    context.startActivity(intent)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = LightGreen,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(text = "Show place on Map.")
+            }
+        }
         Button(
-            onClick = {
-                val intent = Intent(context, MapActivity::class.java)
-                intent.putExtra("latitude", lat)
-                intent.putExtra("longitude", lon)
-                intent.putExtra("name", place.name)
-                context.startActivity(intent)
+            onClick = {navController.navigate(Wait)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
@@ -222,6 +238,37 @@ fun Buttons(
 }
 
 @Composable
+fun ConnectivityBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ){
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp),
+                tint = colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "No internet connection",
+                color = colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
+    }
+}
+@Composable
 fun HeaderImage(modifier: Modifier, navController: NavController) {
     val logoImage = painterResource(R.drawable.queuehub_logo)
     val activity = LocalContext.current as? Activity
@@ -229,7 +276,7 @@ fun HeaderImage(modifier: Modifier, navController: NavController) {
 
     Row(
         modifier = modifier
-            .padding(top = 30.dp)
+
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
@@ -266,7 +313,7 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel, reviewViewM
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .fillMaxHeight(0.75f)
+                .fillMaxHeight(0.7f)
 
         ){
 
@@ -354,7 +401,7 @@ fun ClickableVerticalOption(
             modifier = modifier
                 .size(300.dp)
                 .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .padding(horizontal = 20.dp, vertical = 3.dp),
 
 
 

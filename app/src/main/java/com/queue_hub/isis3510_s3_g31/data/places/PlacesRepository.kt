@@ -4,10 +4,12 @@ package com.queue_hub.isis3510_s3_g31.data.places
 import android.util.ArrayMap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
+import com.queue_hub.isis3510_s3_g31.data.clusters.Cluster
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDao
 import com.queue_hub.isis3510_s3_g31.data.places.mapper.toDomain
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
@@ -81,6 +83,43 @@ class PlacesRepository (
         return places
     }
 
+ fun getClusters(): Flow<List<Cluster>> = flow {
+    val clusters = mutableListOf<Cluster>()
+    val clustersRef = db.collection("clusters")
+
+    try {
+        var result = clustersRef.get().await()
+        var document  :  DocumentSnapshot ? = null
+        var num = result.size()
+        for (i in 0  until num) {
+            document  = result.documents[i]
+            val id = document.id
+
+            val num =(document.get("places_num") as? Int) ?: 0
+            val centerMap = document.get("center") as? Map<String, Any>
+            val location = if (centerMap != null) {
+                val latitude = (centerMap["latitude"] as? Number)?.toDouble() ?: 0.0
+                val longitude = (centerMap["longitude"] as? Number)?.toDouble() ?: 0.0
+                LatLng(latitude, longitude)
+            } else {
+                LatLng(0.0, 0.0)
+            }
+
+            val cluster = Cluster(
+                cluster_id = id,
+                center = location,
+                places_num = num,
+
+            )
+            clusters.add(cluster)
+        }
+
+        emit(clusters)
+    } catch (e: Exception) {
+        Log.e("getClusters", "Error fetching clusters: ", e)
+        emit(emptyList())
+    }
+}
     suspend fun getLessWaitingTimeLastHour() : List<Place>{
         val places = mutableListOf<Place>()
         val lessWaitingTimeRef = db.collection("recommendedPlaces").document("lestTimeLastHour")
