@@ -224,7 +224,8 @@ fun Buttons(
             }
         }
         Button(
-            onClick = {navController.navigate(Wait)
+            onClick = {
+                navController.navigate(Review)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
