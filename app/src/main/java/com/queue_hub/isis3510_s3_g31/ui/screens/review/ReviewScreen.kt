@@ -216,6 +216,24 @@ fun PlaceCard(
                             style = MaterialTheme.typography.bodyMedium,
                             color = colorScheme.onSurfaceVariant
                         )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .background(
+                                    color = colorScheme.primary.copy(alpha = 0.1f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(8.dp)
+                        ) {
+                            Text(
+                                text = "${String.format("%.1f", place.averageScoreReview)} ★",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = colorScheme.primary
+                            )
+                        }
+
                     }
 
                     GlideImage(
