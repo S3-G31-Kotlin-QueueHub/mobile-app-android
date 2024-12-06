@@ -8,51 +8,29 @@ import android.net.Network
 import android.net.NetworkCapabilities
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 
-class AndroidNetworkManager(
-    private val context: Context
-): NetworkManager {
+class AndroidNetworkManager(context: Context) : NetworkManager {
 
-    private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val connectivityManager = context.applicationContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    private val _isConnected = MutableStateFlow(false)
+    override val isConnected: StateFlow<Boolean> get() = _isConnected
 
-    override val isConnected: Flow<Boolean>
-        get() = callbackFlow {
-            val callback = object : NetworkCallback() {
-
-                override fun onCapabilitiesChanged(
-                    network: Network,
-                    networkCapabilities: NetworkCapabilities
-                ){
-                    super.onCapabilitiesChanged(network, networkCapabilities)
-                    val connected = networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                    trySend(connected)
-                }
-
-                override fun onUnavailable() {
-                    super.onUnavailable()
-                    trySend(false)
-                }
-
-                override fun onLost(network: Network) {
-                    super.onLost(network)
-                    trySend(false)
-                }
-
-                override fun onAvailable(network: Network) {
-                    super.onAvailable(network)
-                    trySend(true)
-                }
+    init {
+        val callback = object : NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                _isConnected.value = true
             }
 
-            connectivityManager.registerDefaultNetworkCallback(callback)
-
-            awaitClose {
-                connectivityManager.unregisterNetworkCallback(callback)
+            override fun onLost(network: Network) {
+                _isConnected.value = false
             }
-
         }
 
-
-
+        // Registrar el callback solo una vez
+        connectivityManager.registerDefaultNetworkCallback(callback)
+    }
 }

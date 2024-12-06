@@ -5,6 +5,7 @@ import android.util.ArrayMap
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.GeoPoint
 import com.queue_hub.isis3510_s3_g31.data.places.local.PlacesDao
@@ -41,7 +42,10 @@ class PlacesRepository (
         try {
             val result = allPlacesRef.get().await()
             this.allPlacesCache = ArrayMap(result.size() + 5) // Se crea el cache
-            for (document in result) {
+            var document: DocumentSnapshot? = null
+            var n  = result.size()
+            for (i in 0 until n ){
+                document = result.documents[i]
                 val id = document.id
                 val name = document.getString("name") ?: ""
                 val address = document.getString("address") ?: ""

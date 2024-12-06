@@ -1,12 +1,14 @@
 package com.queue_hub.isis3510_s3_g31.ui.screens.detail
 import android.app.Activity
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.activity.compose.LocalOnBackPressedDispatcherOwner
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -26,6 +28,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -63,32 +66,43 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.MapActivity
 import com.queue_hub.isis3510_s3_g31.R
+import com.queue_hub.isis3510_s3_g31.ui.navigation.Review
 import com.queue_hub.isis3510_s3_g31.ui.navigation.Wait
+import com.queue_hub.isis3510_s3_g31.ui.screens.review.ReviewViewModel
 import com.queue_hub.isis3510_s3_g31.ui.theme.DarkGreen
 import com.queue_hub.isis3510_s3_g31.ui.theme.LightGreen
+import com.queue_hub.isis3510_s3_g31.ui.theme.Pink40
 import kotlinx.coroutines.delay
 
 
 @Composable
-fun DetailScreen(navController: NavController, modifier: Modifier, detailViewModel: DetailViewModel) {
+fun DetailScreen(navController: NavController, modifier: Modifier, detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
 
-    Box(
+    Box (
         Modifier
             .fillMaxSize()
-            .padding(20.dp)
-    ) {
+            .background(colorScheme.background)
+    ){
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(20.dp)
+        ) {
 
 
-        Detail(
-            modifier = Modifier,
-            navController = navController,
-            detailViewModel = detailViewModel
-        )
+            Detail(
+                modifier = Modifier,
+                navController = navController,
+                detailViewModel = detailViewModel,
+                reviewViewModel = reviewViewModel
+            )
+        }
     }
+
 }
 
 @Composable
-fun Detail (modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel){
+fun Detail (modifier: Modifier, navController: NavController, detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -112,7 +126,7 @@ fun Detail (modifier: Modifier, navController: NavController, detailViewModel: D
         }
         if (showContent) {
         Spacer(modifier = Modifier.padding(8.dp))
-        HomeOptions(modifier = Modifier, detailViewModel)
+        HomeOptions(modifier = Modifier, detailViewModel, reviewViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
         Buttons(modifier, navController, detailViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
@@ -135,6 +149,9 @@ fun Buttons(
     navController: NavController,
     detailViewModel: DetailViewModel
 ) {
+    val context = LocalContext.current
+    val queuedState = detailViewModel.activeTurn.value
+    val isConnected by detailViewModel.isConnected.collectAsState(initial = false)
 
     val queuedState = detailViewModel.queuedState.value
     val place = detailViewModel.place.value
@@ -142,38 +159,57 @@ fun Buttons(
     val lat = detailViewModel.lat.value
 
     val lon = detailViewModel.lon.value
+    LaunchedEffect(isConnected) {
+        if (!isConnected) {
+
+            Toast.makeText(context, "No hay conexión a internet", Toast.LENGTH_SHORT).show()
+        }
+    }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
     ) {
+        val context = LocalContext.current
         Button(
             onClick = {
-                if (!queuedState) {
+                if (!isConnected){
+                    Toast.makeText(context, "There is not internet connection.", Toast.LENGTH_SHORT).show()
+
+                }
+                else if (!queuedState) {
                     detailViewModel.addTurn()
                     navController.navigate(Wait) {
                         popUpTo(navController.graph.startDestinationId) {
                             inclusive = true
                         }
                     }
-                } else {
-                    navController.navigate(Home)
+
                 }
+                else{
+                    navController.navigate(Wait) {
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+                }
+
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = DarkGreen,
+                containerColor = if (isConnected && !queuedState ) DarkGreen else if (!isConnected)  Pink40 else Color.Gray,
                 contentColor = Color.White
             )
         ) {
-            Text(text = if (queuedState) "Go to Home" else "Give me a turn.")
+            Text(text = if (!isConnected) "No internet connection" else if (queuedState) "See my actual turn" else "Give me a turn.")
         }
         val context = LocalContext.current
         Button(
             onClick = {
 
-               
 
+
+                navController.navigate(Review)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
@@ -219,7 +255,7 @@ fun HeaderImage(modifier: Modifier, navController: NavController) {
 
 
 @Composable
-fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
+fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel, reviewViewModel: ReviewViewModel) {
     Column(
 
         modifier = modifier.fillMaxWidth()
@@ -239,7 +275,8 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 
 
                 modifier = Modifier.weight(1f),
-                detailViewModel
+                detailViewModel,
+                reviewViewModel
 
             )
 
@@ -259,10 +296,14 @@ fun HomeOptions(modifier: Modifier,detailViewModel: DetailViewModel) {
 fun ClickableVerticalOption(
 
     modifier: Modifier,
-    detailViewModel: DetailViewModel
+    detailViewModel: DetailViewModel,
+    reviewViewModel: ReviewViewModel
 ) {
     val onQueue = detailViewModel.onQueue.value
     val place = detailViewModel.place.value
+    val queuedState = detailViewModel.activeTurn.value
+    reviewViewModel.onPlaceIdChange(place.id)
+
     Card(
         modifier = modifier
             .padding(8.dp)
@@ -319,26 +360,28 @@ fun ClickableVerticalOption(
 
 
         ) {
+
             Text(
                 text = "Average Waiting Time: ${place.averageWaitingTime} min",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "Best arrival time: ${place.bestAverageFrame}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
             Text(
                 text = "People on Queue: ${onQueue}",
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.fillMaxWidth()
             )
 
 
         }
     }
+
 }
 

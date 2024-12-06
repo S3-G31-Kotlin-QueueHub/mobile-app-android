@@ -8,12 +8,16 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
+import com.queue_hub.isis3510_s3_g31.data.DataLayerFacade
 import com.queue_hub.isis3510_s3_g31.data.users.UsersRepository
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 class SignUpViewModel(
-    private val auth: FirebaseAuth,
-    private val usersRepository: UsersRepository): ViewModel() {
+    private val dataLayerFacade: DataLayerFacade
+): ViewModel() {
 
     private val _email = MutableLiveData<String>()
     val email: LiveData<String> = _email
@@ -42,12 +46,29 @@ class SignUpViewModel(
     private val _signUpState = MutableLiveData<SignUpState>()
     val signUpState: LiveData<SignUpState> = _signUpState
 
+    private val _isConnected = MutableStateFlow<Boolean>(false)
+    val isConnected: StateFlow<Boolean> = _isConnected
+
+    private val _validName = MutableLiveData<Boolean>()
+    val validName: LiveData<Boolean> = _validName
+
+    init {
+        checkInternetConnection()
+    }
+
     fun signUp() {
         viewModelScope.launch {
             _signUpState.value = SignUpState.Loading
             try {
 
                 if((_validEmail.value == true) && (_validPassword.value == true)){
+                    val nameValue = _name.value.orEmpty()
+
+                    if (!isValidName(nameValue)) {
+                        _signUpState.value = SignUpState.Error("Name must not be empty and less than 20 characters")
+                        return@launch
+                    }
+
                     val emailValue = _email.value.orEmpty()
                     val passwordValue = _password.value.orEmpty()
 
@@ -60,7 +81,7 @@ class SignUpViewModel(
                         return@launch
                     }
 
-                    usersRepository.signUp(emailValue, passwordValue, _phone.value.orEmpty(), _name.value.orEmpty())
+                    dataLayerFacade.signUp(emailValue, passwordValue, _phone.value.orEmpty(), _name.value.orEmpty())
 
                     _signUpState.value = SignUpState.Success
 
@@ -71,7 +92,7 @@ class SignUpViewModel(
                 val errorMessage = when {
                     e.message?.contains("email", ignoreCase = true) == true ->
                         "This email has already register, please sign in or try with a different email."
-                    else -> "Error during sign up: ${e.message}"
+                    else -> "Please check your internet connection and try again"
                 }
                 _signUpState.value = SignUpState.Error(errorMessage)
                 Log.e(TAG, "Error en signUp", e)
@@ -79,7 +100,13 @@ class SignUpViewModel(
         }
     }
 
-
+    private fun checkInternetConnection() {
+        viewModelScope.launch {
+            dataLayerFacade.checkNetworkConnection().collect { isConnected ->
+                _isConnected.value = isConnected
+            }
+        }
+    }
 
     fun onSignUpPasswordChange(password: String) {
         _password.value = password
@@ -103,6 +130,11 @@ class SignUpViewModel(
 
     fun onSignUpNameChange(name: String) {
         _name.value = name
+        _validName.value = isValidName(name)
+    }
+
+    private fun isValidName(name: String): Boolean {
+        return name.isNotEmpty() && name.length <= 20
     }
 
     private fun isValidPassword(password: String): Boolean {

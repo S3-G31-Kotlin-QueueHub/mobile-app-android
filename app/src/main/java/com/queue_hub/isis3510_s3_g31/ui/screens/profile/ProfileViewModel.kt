@@ -23,7 +23,7 @@ class ProfileViewModel (private val placesRepository: PlacesRepository, private 
 
     var state by mutableStateOf(ProfileViewState())
         private set
-    var userId by mutableStateOf<String?>("null")
+
     var turns by mutableStateOf(emptyList<EndedTurn>())
 
 
@@ -45,7 +45,7 @@ class ProfileViewModel (private val placesRepository: PlacesRepository, private 
         usersRepository.clearUserData()
     }
 
-    suspend fun getTurnsByUser():List<EndedTurn>{
+    fun getTurnsByUser():List<EndedTurn>{
         val endedTurnsList = mutableListOf<EndedTurn>()
         CoroutineScope(Dispatchers.IO).launch {
             turnsRepository.getAllTurnsOfUser(state.id).collect { list ->

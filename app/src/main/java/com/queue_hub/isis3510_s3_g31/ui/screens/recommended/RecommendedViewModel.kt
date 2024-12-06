@@ -32,8 +32,11 @@ class RecommendedViewModel ( private val dataLayerFacade: DataLayerFacade): View
 
         viewModelScope.launch (Dispatchers.IO){
             val allPlaces : List<Place> = dataLayerFacade.getAllPlaces()
-            allPlaces.forEach {
-                Log.d("DatosPlaces", "Place vm: $it")
+            val n = allPlaces.size
+            var place: Place? = null
+            for (i in 0 until n) {
+                place = allPlaces[i]
+                Log.d("DatosPlaces", "Place vm: $place")
             }
             state = state.copy(
                 places = allPlaces,
