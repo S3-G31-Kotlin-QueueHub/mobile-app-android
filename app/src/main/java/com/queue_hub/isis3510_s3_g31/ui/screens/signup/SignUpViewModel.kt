@@ -57,7 +57,7 @@ class SignUpViewModel(
     }
 
     fun signUp() {
-        viewModelScope.launch (Dispatchers.IO) {
+        viewModelScope.launch {
             _signUpState.value = SignUpState.Loading
             try {
 
@@ -92,7 +92,7 @@ class SignUpViewModel(
                 val errorMessage = when {
                     e.message?.contains("email", ignoreCase = true) == true ->
                         "This email has already register, please sign in or try with a different email."
-                    else -> "Error during sign up: ${e.message}"
+                    else -> "Please check your internet connection and try again"
                 }
                 _signUpState.value = SignUpState.Error(errorMessage)
                 Log.e(TAG, "Error en signUp", e)

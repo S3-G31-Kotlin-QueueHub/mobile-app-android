@@ -47,7 +47,7 @@ class HomeViewModel(
     }
 
     private fun startLocationUpdates() {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO) {
 
             dataLayerFacade.requestLocationUpdates().collect { location ->
                 _locationData.value = location
@@ -56,7 +56,7 @@ class HomeViewModel(
     }
 
     private fun checkInternetConnection() {
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO) {
             dataLayerFacade.checkNetworkConnection().collect { isConnected ->
                 _isConnected.value = isConnected
             }

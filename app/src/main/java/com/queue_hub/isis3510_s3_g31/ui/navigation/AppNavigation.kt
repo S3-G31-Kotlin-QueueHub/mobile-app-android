@@ -80,7 +80,7 @@ fun AppNavigation(
             SignUpScreen(navController = navController, viewModel = SignUpViewModel(dataLayerFacade = dataLayerFacade))
         }
         composable<Wait> {
-            WaitScreen(navController = navController, waitViewModel = WaitViewModel(turnsRepository = turnsRepository, usersRepository = usersRepository, queuesRepository = queuesRepository))
+            WaitScreen(navController = navController, waitViewModel = WaitViewModel(dataLayerFacade = dataLayerFacade))
         }
         composable<Profile> {
             ProfileScreen(navController = navController, modifier = Modifier, profileViewModel = ProfileViewModel( placesRepository = placesRepository, usersRepository=usersRepository, turnsRepository = turnsRepository))

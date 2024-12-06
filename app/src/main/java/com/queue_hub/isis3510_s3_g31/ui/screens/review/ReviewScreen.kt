@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.Star
+import androidx.compose.material.icons.rounded.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.places.model.Place
 import com.queue_hub.isis3510_s3_g31.data.reviews.model.Review
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.ConnectivityBanner
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -70,7 +72,7 @@ fun ReviewScreen(
         ) {
             Review(
                 modifier = Modifier.fillMaxSize(),
-                viewModel = reviewViewModel,
+                reviewViewModel = reviewViewModel,
                 navController = navController,
                 reviewState = reviewState,
                 placeState = placeState
@@ -83,11 +85,12 @@ fun ReviewScreen(
 @Composable
 fun Review(
     modifier: Modifier,
-    viewModel: ReviewViewModel,
+    reviewViewModel: ReviewViewModel,
     navController: NavController,
     reviewState: ReviewViewState<List<Review>>,
     placeState: ReviewViewState<Place>
 ) {
+    val isConnected by reviewViewModel.isConnected.collectAsState(initial = true)
     Column(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -95,6 +98,9 @@ fun Review(
     ) {
         HeaderImage(modifier = Modifier)
         Spacer(modifier = Modifier.padding(8.dp))
+        if (!isConnected) {
+            ConnectivityBanner()
+        }
         PlaceCard(placeState = placeState)
         Spacer(modifier = Modifier.padding(8.dp))
         Text(
@@ -103,6 +109,38 @@ fun Review(
         )
         Spacer(modifier = Modifier.padding(8.dp))
         ReviewList(reviewState = reviewState)
+    }
+}
+
+@Composable
+fun ConnectivityBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ){
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp),
+                tint = colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "No internet connection",
+                color = colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+
     }
 }
 

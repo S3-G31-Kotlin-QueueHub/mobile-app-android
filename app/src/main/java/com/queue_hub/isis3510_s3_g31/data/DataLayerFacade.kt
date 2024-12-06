@@ -15,6 +15,7 @@ import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationData
 import com.queue_hub.isis3510_s3_g31.utils.location_services.LocationProvider
 import com.queue_hub.isis3510_s3_g31.utils.network_services.NetworkManager
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 
 class DataLayerFacade(
@@ -78,7 +79,7 @@ class DataLayerFacade(
         return locationProvider.requestLocationUpdates()
     }
 
-    suspend fun checkNetworkConnection(): Flow<Boolean> {
+    suspend fun checkNetworkConnection(): StateFlow<Boolean> {
         return networkManager.isConnected
     }
 
@@ -89,6 +90,11 @@ class DataLayerFacade(
     suspend fun signUp(email: String, password: String, phone: String, name: String) {
         return usersRepository.signUp(email, password, phone, name)
     }
+
+    suspend fun userId(): Flow<String> {
+        return usersRepository.userId
+    }
+
 
 
 }

@@ -56,6 +56,7 @@ import com.queue_hub.isis3510_s3_g31.R
 import com.queue_hub.isis3510_s3_g31.data.queues.model.PreviousQueue
 import com.queue_hub.isis3510_s3_g31.data.queues.model.Queue
 import com.queue_hub.isis3510_s3_g31.data.turns.model.Turn
+import com.queue_hub.isis3510_s3_g31.ui.screens.home.ConnectivityBanner
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -80,7 +81,37 @@ fun UserQueuesScreen(
         UserQueues(modifier = Modifier, queuesState = queuesState, turnState = turnState, queueState = queueState, navController = navController, userQueuesViewModel = userQueuesViewModel)
     }
 }
+@Composable
+fun ConnectivityBanner() {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = colorScheme.errorContainer)
+    ) {
+        Row (
+            horizontalArrangement = Arrangement.Start,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+        ){
+            Icon(
+                imageVector = Icons.Rounded.Info,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(16.dp),
+                tint = colorScheme.onErrorContainer
+            )
+            Spacer(modifier = Modifier.width(4.dp))
+            Text(
+                text = "No internet connection",
+                color = colorScheme.onErrorContainer,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
 
+    }
+}
 @Composable
 fun UserQueues(
     modifier: Modifier,
@@ -90,6 +121,7 @@ fun UserQueues(
     queueState: UserQueuesViewState<Queue>,
     userQueuesViewModel: UserQueuesViewModel
 ){
+    val isConnected by userQueuesViewModel.isConnected.collectAsState(initial = true)
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -97,6 +129,9 @@ fun UserQueues(
     ) {
         HeaderImage(modifier = Modifier)
         Spacer(modifier = Modifier.padding(8.dp))
+        if (!isConnected) {
+            ConnectivityBanner()
+        }
         TurnCard(modifier = Modifier, turnState = turnState, queueState = queueState, userQueuesViewModel = userQueuesViewModel)
         Spacer(modifier = Modifier.padding(8.dp))
         Text(
@@ -158,7 +193,7 @@ fun TurnCard(
 
                     when {
                         queue.currentTurnNumber == turn.turnNumber -> {
-                            ActiveTurnInfo(queue = queue)
+                            ActiveTurnInfo(queue = queue, userQueuesViewModel = userQueuesViewModel)
                         }
                         turn.idUser.isNotEmpty() -> {
                             WaitingTurnInfo(turn = turn, queue = queue, userQueuesViewModel = userQueuesViewModel)
@@ -219,7 +254,8 @@ fun EmptyQueueState() {
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun ActiveTurnInfo(queue: Queue) {
+fun ActiveTurnInfo(queue: Queue, userQueuesViewModel: UserQueuesViewModel) {
+    val isConnected by userQueuesViewModel.isConnected.collectAsState()
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -235,6 +271,8 @@ fun ActiveTurnInfo(queue: Queue) {
                 .weight(1.2f)
                 .fillMaxHeight()
         ) {
+
+
             Text(
                 text = stringResource(R.string.it_is_your_turn),
                 style = MaterialTheme.typography.headlineMedium.copy(
@@ -242,6 +280,7 @@ fun ActiveTurnInfo(queue: Queue) {
                 ),
                 color = colorScheme.primary
             )
+
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -258,6 +297,15 @@ fun ActiveTurnInfo(queue: Queue) {
                 style = MaterialTheme.typography.bodyLarge,
                 color = colorScheme.primary
             )
+            if(!isConnected){
+                Text(
+                    text = "No internet connection, arrived at the place to get your turn",
+                    style = MaterialTheme.typography.labelSmall.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = colorScheme.error
+                )
+            }
 
         }
 
@@ -292,6 +340,7 @@ fun ActiveTurnInfo(queue: Queue) {
 fun WaitingTurnInfo(turn: Turn, queue: Queue, userQueuesViewModel: UserQueuesViewModel) {
 
     val showCancelDialog by userQueuesViewModel.showCancelDialog.collectAsState()
+    val isConnected by userQueuesViewModel.isConnected.collectAsState()
 
     if(showCancelDialog){
         CancelTurnDialog(
@@ -333,32 +382,45 @@ fun WaitingTurnInfo(turn: Turn, queue: Queue, userQueuesViewModel: UserQueuesVie
                 style = MaterialTheme.typography.bodyMedium,
                 color = colorScheme.onSurfaceVariant
             )
-            Button(
-                onClick = {
-                    userQueuesViewModel.showCancelDialog()
-                },
-                modifier = Modifier,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = colorScheme.error,
-                    contentColor = colorScheme.onError
+
+            if(!isConnected){
+                Text(
+                    text = "No internet connection, arrived at the place to check your turn",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = colorScheme.error,
+                    textAlign = TextAlign.Center
                 )
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
+            } else {
+                Button(
+                    onClick = {
+                        userQueuesViewModel.showCancelDialog()
+                    },
+                    modifier = Modifier,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.error,
+                        contentColor = colorScheme.onError
+                    )
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Close,
-                        contentDescription = null,
-                        modifier = Modifier.weight(0.5F)
-                    )
-                    Text(
-                        modifier = Modifier.weight(0.5F),
-                        text = stringResource(R.string.cancel),
-                        style = MaterialTheme.typography.labelLarge
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.Close,
+                            contentDescription = null,
+                            modifier = Modifier.weight(0.5F)
+                        )
+                        Text(
+                            modifier = Modifier.weight(0.5F),
+                            text = stringResource(R.string.cancel),
+                            style = MaterialTheme.typography.labelLarge
+                        )
+                    }
                 }
             }
+
         }
         Card(
             modifier = Modifier
