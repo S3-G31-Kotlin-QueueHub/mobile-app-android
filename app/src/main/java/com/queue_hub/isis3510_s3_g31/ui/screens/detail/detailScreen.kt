@@ -152,8 +152,6 @@ fun Buttons(
     val context = LocalContext.current
     val queuedState = detailViewModel.activeTurn.value
     val isConnected by detailViewModel.isConnected.collectAsState(initial = false)
-
-    val queuedState = detailViewModel.queuedState.value
     val place = detailViewModel.place.value
 
     val lat = detailViewModel.lat.value
@@ -203,13 +201,14 @@ fun Buttons(
         ) {
             Text(text = if (!isConnected) "No internet connection" else if (queuedState) "See my actual turn" else "Give me a turn.")
         }
-        val context = LocalContext.current
+
         Button(
             onClick = {
-
-
-
-                navController.navigate(Review)
+                val intent = Intent(context, MapActivity::class.java)
+                intent.putExtra("latitude", lat)
+                intent.putExtra("longitude", lon)
+                intent.putExtra("name", place.name)
+                context.startActivity(intent)
             },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
